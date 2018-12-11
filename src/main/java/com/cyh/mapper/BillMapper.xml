@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cyh.mapper.BillMapper">
+		<!-- 创建用户时 就添加相应的用户账单 -->
+		<insert id="addBill" parameterType="com.cyh.pojo.Customer">
+				insert into bill(id,uid,uname,`one`,two,three,four,five,six,seven,eight,nine,ten,eleven,twelve,thirteen,cdelete)
+				value(#{cid},#{cid},#{cname},0,0,0,0,0,0,0,0,0,0,0,0,0,1)
+		</insert>
+		<!-- 根据编号，止码，月份 来查询 用户账单 -->
+		<select id="selectBill"  parameterType="com.cyh.pojo.Condition" resultType="com.cyh.pojo.Bill">
+					select * from bill where uid=#{id}
+		</select>
+		<!-- 修改bill中的 Cdelete字段    随着 customer 一起做修改 -->
+		<update id="updateCdelete"  parameterType="com.cyh.pojo.Bill">
+				update bill  set cdelete=#{cdelete}  where uid=#{uid}
+		</update>
+		<!-- 修改了个人信息表后  账单表里的信息也要改 -->
+		<update id="updateBill"  parameterType="com.cyh.pojo.Customer">
+				update bill  set uname=#{cname}  where uid=#{cid}
+		</update>
+		<!-- 修改账单表  如果是第一个月 -->
+		<update id="updateone" parameterType="com.cyh.pojo.Condition">
+				update bill  set one=#{lastNumber}  where uid=#{id}
+		</update>
+		<!-- 修改账单表  如果是第二个月 -->
+		<update id="updatetwo" parameterType="com.cyh.pojo.Condition">
+				update bill  set two=#{lastNumber}  where uid=#{id}
+		</update>
+		<!-- 修改账单表  如果是第3个月 -->
+		<update id="updatethree" parameterType="com.cyh.pojo.Condition">
+				update bill  set three=#{lastNumber}  where uid=#{id}
+		</update>
+		<!-- 修改账单表  如果是第4个月 -->
+		<update id="updatefour" parameterType="com.cyh.pojo.Condition">
+				update bill  set four=#{lastNumber}  where uid=#{id}
+		</update>
+		<!-- 修改账单表  如果是第5个月 -->
+		<update id="updatefive" parameterType="com.cyh.pojo.Condition">
+				update bill  set five=#{lastNumber}  where uid=#{id}
+		</update>
+		<!-- 修改账单表  如果是第6个月 -->
+		<update id="updatesix" parameterType="com.cyh.pojo.Condition">
+				update bill  set six=#{lastNumber}  where uid=#{id}
+		</update>
+		<!-- 修改账单表  如果是第7个月 -->
+		<update id="updateseven" parameterType="com.cyh.pojo.Condition">
+				update bill  set seven=#{lastNumber}  where uid=#{id}
+		</update>
+		<!-- 修改账单表  如果是第8个月 -->
+		<update id="updateeight" parameterType="com.cyh.pojo.Condition">
+				update bill  set eight=#{lastNumber}  where uid=#{id}
+		</update>
+		<!-- 修改账单表  如果是第9个月 -->
+		<update id="updatenine" parameterType="com.cyh.pojo.Condition">
+				update bill  set nine=#{lastNumber}  where uid=#{id}
+		</update>
+		<!-- 修改账单表  如果是第10个月 -->
+		<update id="updateten" parameterType="com.cyh.pojo.Condition">
+				update bill  set ten=#{lastNumber}  where uid=#{id}
+		</update>
+		<!-- 修改账单表  如果是第11个月 -->
+		<update id="updateeleven" parameterType="com.cyh.pojo.Condition">
+				update bill  set eleven=#{lastNumber}  where uid=#{id}
+		</update>
+		<!-- 修改账单表  如果是第12个月 -->
+		<update id="updatetwelve" parameterType="com.cyh.pojo.Condition">
+				update bill  set twelve=#{lastNumber},thirteen=#{lastNumber}  where uid=#{id}
+		</update>
+		<!-- 查询所有的用户月起止码 可以按照条件查询         一个查询框 这次查询的是 姓名 -->
+		<select id="getAllBills"  parameterType="com.cyh.pojo.CustomerPage"  resultType="com.cyh.pojo.Bill">
+				select * from bill 
+  					where  cdelete !=0
+						<if test="name != null and name != ''">
+							and uNAME LIKE '%${name}%' 
+						</if>	
+  					limit #{pageNow},#{pageSize}
+		</select>
+		<!-- 查询所有的用户月起止码 可以按照条件查询  !!! 一个查询框 这次查询的是 编号-->
+		<select id="getBB"  parameterType="com.cyh.pojo.CustomerPage"  resultType="com.cyh.pojo.Bill">
+				select * from bill 
+  					where  cdelete !=0
+						<if test="name != null and name != ''">
+							and uid LIKE '%${name}%' 
+						</if>	
+  					limit #{pageNow},#{pageSize}
+		</select>
+		<!--根据编号查询用户个月起止码 -->
+		<select id="getBillById"  parameterType="java.lang.Integer" resultType="com.cyh.pojo.Bill">
+				select * from bill where uid=#{uid}
+		</select>
+		<!-- 修改用户起止码 -->
+		<update id="updateBills"  parameterType="com.cyh.pojo.Bill">
+				update bill set  one=#{one},two=#{two},three=#{three},four=#{four},five=#{five},six=#{six},seven=#{seven},eight=#{eight},nine=#{nine},ten=#{ten},eleven=#{eleven},twelve=#{twelve},thirteen=#{thirteen}
+				where uid=#{uid}
+		</update>
+
+		<!-- 表单提交前，根据输入的月份和用户编号——校验输入止码的正确性 -->
+		<select id="getWaterMeterNumberByCustomerNumAndMonth"  parameterType="com.cyh.pojo.Condition"  resultType="java.lang.Integer" >
+				select ${AB} from bill 
+  					where  uid = ${id}  
+		</select>
+
+		<!-- 获取今日录入水费的用户数-->
+		<select id="getSectionNum"   resultType="java.lang.Integer" >
+			SELECT
+				count(*)
+			FROM
+				transitionmodel
+			WHERE
+				create_time BETWEEN #{startDate}
+				AND #{endDate}
+		</select>
+
+		<!-- 按 limit 获取今日录入用户的详情-->
+		<select id="getToDayDatasList"   resultType="com.cyh.pojo.TransitionModel" >
+			SELECT
+				*
+			FROM
+				transitionmodel
+			WHERE
+				create_time BETWEEN #{startDate}
+				AND #{endDate}
+			ORDER BY
+				create_time
+			limit ${limit},50
+		</select>
+</mapper>

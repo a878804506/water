@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cyh.mapper.WaterConsumptionMapper">
+	<insert id="addWBill" parameterType="com.cyh.pojo.Customer">
+		insert into
+		waterconsumption(id,uid,uname,`wone`,wtwo,wthree,wfour,wfive,wsix,wseven,weight,wnine,wten,weleven,wtwelve)
+		values(#{cid},#{cid},#{cname},0,0,0,0,0,0,0,0,0,0,0,0)
+	</insert>
+	
+	<!-- 修改了个人信息表后 月账单表里的信息也要改 -->
+	<update id="updateWBill" parameterType="com.cyh.pojo.Customer">
+		update waterconsumption set uname=#{cname} where uid=#{cid}
+	</update>
+	
+	<!-- 修改了个人信息表后 月账单表里的信息也要改 -->
+	<update id="updateWaterConsumptionByMonth" >
+		update waterconsumption set ${month} = ${waterConsumption} where uid =${uid}
+	</update>
+	
+	<!-- 查看全镇用水费 -->
+	<select id="waterConsumptionAllCost" resultType="com.cyh.pojo.MonthBill">
+		SELECT
+			cast( sum( t.mone ) AS DECIMAL (19, 5) ) mone ,
+			cast( sum( t.mtwo ) AS DECIMAL (19, 5) )  mtwo,
+			cast( sum( t.mthree ) AS DECIMAL (19, 5) )  mthree,
+			cast( sum( t.mfour ) AS DECIMAL (19, 5) )  mfour,
+			cast( sum( t.mfive ) AS DECIMAL (19, 5) ) mfive,
+			cast( sum( t.msix ) AS DECIMAL (19, 5) ) msix,
+			cast( sum( t.mseven ) AS DECIMAL (19, 5) ) mseven,
+			cast( sum( t.meight ) AS DECIMAL (19, 5) ) meight,
+			cast( sum( t.mnine ) AS DECIMAL (19, 5) ) mnine,
+			cast( sum( t.mten ) AS DECIMAL (19, 5) ) mten,
+			cast( sum( t.meleven ) AS DECIMAL (19, 5) ) meleven,
+			cast( sum( t.mtwelve ) AS DECIMAL (19, 5) ) mtwelve
+		FROM
+			monthbill${year}   t
+	</select>
+	<!-- 查看全镇用水量 -->
+	<select id="waterConsumptionAllAmount" resultType="com.cyh.pojo.WaterConsumption">
+		SELECT
+			sum( t.wone ) wone,
+			sum( t.wtwo ) wtwo,
+			sum( t.wthree ) wthree,
+			sum( t.wfour ) wfour,
+			sum( t.wfive ) wfive,
+			sum( t.wsix ) wsix,
+			sum( t.wseven ) wseven,
+			sum( t.weight ) weight,
+			sum( t.wnine ) wnine,
+			sum( t.wten ) wten,
+			sum( t.weleven ) weleven,
+			sum( t.wtwelve ) wtwelve
+		FROM
+			waterconsumption${year}   t
+	</select>
+	
+	<!-- 查看全镇用水费 -->
+	<select id="waterConsumptionUserCost" resultType="com.cyh.pojo.MonthBill">
+		SELECT
+			*
+		FROM
+			monthbill${year}   t
+		where
+			uid=${cid}
+	</select>
+	<!-- 查看全镇用水量 -->
+	<select id="waterConsumptionUserAmount" resultType="com.cyh.pojo.WaterConsumption">
+		SELECT
+			*
+		FROM
+			waterconsumption${year}   t
+		where
+			uid=${cid}
+	</select>
+
+	<select id="getTopDataByMonths" resultType="Map">
+		SELECT
+			uid uid,
+			uname uname,
+			${lastMonth} lastData,
+			${month} thisData,
+			CONCAT( CONVERT ( ( ${month} - ${lastMonth} ) / ${lastMonth} * 100, DECIMAL ( 10, 2 ) ), '%' ) link
+		FROM
+			${table}
+		ORDER BY
+			${month} DESC
+			LIMIT 0,
+			${top}
+	</select>
+
+	<select id="getTopDataByLastTable" resultType="Map">
+		SELECT
+			t.uid uid,
+			t.uname uname,
+			t1.${lastMonth} lastData,
+			t.${month} thisData,
+			CONCAT( CONVERT ( ( t.${month} - t1.${lastMonth} ) / t1.${lastMonth} * 100, DECIMAL ( 10, 2 ) ), '%' ) link
+		FROM
+			${table} t,
+			${lastTable} t1
+		where
+			t.uid = t1.uid
+		ORDER BY
+			t.${month} DESC
+			LIMIT 0,
+			${top}
+	</select>
+
+	<select id="getPieDataByMonths" resultType="Integer">
+		select SUM(t.${month}) topSum from (
+			SELECT
+				${month}
+			FROM
+				${table}
+			ORDER BY
+				${month} DESC
+				LIMIT 0,
+				${top}
+			) t
+		UNION all
+		select sum(t.${month}) sum from ${table} t
+	</select>
+</mapper>

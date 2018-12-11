@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cyh.mapper.MenuPermissionMapper">
+	<select id="getMenuByUserId" parameterType="java.lang.Integer" resultType="com.cyh.pojo.MenuPermission">
+		SELECT
+			t2.id,
+			t2.`name`,
+			t2.type,
+			t2.url,
+			t2.parentid parentId,
+			t2.order_list orderList,
+			t2.icon_cls iconCls,
+			t2.`status`,
+			t2.remark
+		FROM
+			user t1,
+			menupermission t2,
+			usertomenupermissionmapping t3
+		WHERE
+			t1.id = t3.userid
+			AND t2.id = t3.menupermissionid
+			AND t1.id = #{uid}
+			AND t2.type = 'menu'
+		ORDER BY
+			t2.id
+	</select>
+
+	<select id="getPermissionListByUserId" parameterType="java.lang.Integer" resultType="com.cyh.pojo.MenuPermission">
+		SELECT
+			t2.id,
+			t2.`name`,
+			t2.type,
+			t2.url,
+			t2.parentid parentId,
+			t2.order_list orderList,
+			t2.icon_cls iconCls,
+			t2.`status`,
+			t2.remark
+		FROM
+			user t1,
+			menupermission t2,
+			usertomenupermissionmapping t3
+		WHERE
+			t1.id = t3.userid
+			AND t2.id = t3.menupermissionid
+			AND t1.id = #{uid}
+			AND t2.type = 'permission'
+		ORDER BY
+			t2.id
+	</select>
+
+	<select id="getAllMenu"  resultType="com.cyh.pojo.MenuPermission">
+		SELECT
+			t2.id,
+			t2.`name`,
+			t2.type,
+			t2.url,
+			t2.parentid parentId,
+			t2.order_list orderList,
+			t2.icon_cls iconCls,
+			t2.`status`,
+			t2.remark
+		FROM
+			menupermission t2
+		#WHERE
+			#t2.type = 'menu'
+	</select>
+
+	<select id="getUserMenuPermissionByUserId"  resultType="java.lang.Integer">
+		SELECT
+			t.menupermissionid
+		FROM
+			usertomenupermissionmapping t
+		WHERE
+			t.userid = #{uid}
+	</select>
+
+	<delete id="deleteUserMenuPermissionByUserId" parameterType="java.lang.Integer" >
+		delete from usertomenupermissionmapping where userid = #{uid}
+	</delete>
+
+	<insert id="insertUserMenuPermissionByUserId"  parameterType="java.lang.String">
+		insert into usertomenupermissionmapping(userid,menupermissionid) values ${condition}
+	</insert>
+</mapper>

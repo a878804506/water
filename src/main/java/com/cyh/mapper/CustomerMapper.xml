@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cyh.mapper.CustomerMapper">
+	<!-- 添加用户 -->
+	<insert id="addCustomer" parameterType="com.cyh.pojo.Customer"
+		useGeneratedKeys="true" keyProperty="cid">
+		insert into customer(cid,cname,cprice,caddress,cstartime,cstatus,cdelete)
+		value(#{cid},#{cname},#{cprice},#{caddress},#{cstartime},1,1)
+	</insert>
+	<!-- 查询所有用户-可以按照条件查询 -->
+	<select id="showCustomer" parameterType="com.cyh.pojo.CustomerPage"
+		resultType="com.cyh.pojo.Customer">
+		select * from customer
+		where cdelete!=0
+		<if test="name != null and name != ''">
+			and cNAME LIKE '%${name}%'
+		</if>
+		limit #{pageNow},#{pageSize}
+	</select>
+	<!-- 启用 报停操作 -->
+	<update id="delete" parameterType="com.cyh.pojo.Customer">
+		update customer set cstatus=#{cstatus} where cid=#{cid}
+	</update>
+	<!-- 根据编号查询对象 -->
+	<select id="getCustomerById" parameterType="java.lang.Integer"
+		resultType="com.cyh.pojo.Customer">
+		select * from customer where cid=#{cid}
+	</select>
+	<!--删除操作 不是真正地删除 -->
+	<update id="deletes" parameterType="com.cyh.pojo.Customer">
+		update customer set cdelete=#{cdelete} where cid=#{cid}
+	</update>
+
+	<!-- 查询总的信息条数，有可能是按照姓名条件查询后，再查询总的信息条数 -->
+	<select id="getCustomerCount" resultType="java.lang.Integer"
+		parameterType="com.cyh.pojo.CustomerPage">
+		SELECT
+		count(*)
+		FROM
+		customer
+		where cdelete!=0
+		<if test="name != null and name != ''">
+			and cNAME LIKE '%${name}%'
+		</if>
+	</select>
+	<!-- 查询总的信息条数，有可能是按照姓名条件查询后，再查询总的信息条数 根据id来模糊查询 -->
+	<select id="getCustomerCountById" resultType="java.lang.Integer"
+		parameterType="com.cyh.pojo.CustomerPage">
+		SELECT
+		count(*)
+		FROM
+		customer
+		where cdelete!=0
+		<if test="name != null and name != ''">
+			and cid LIKE '%${name}%'
+		</if>
+	</select>
+	<!-- 查询删除的用户 -->
+	<select id="selectDelete" parameterType="com.cyh.pojo.CustomerPage"
+		resultType="com.cyh.pojo.Customer">
+		select * from customer
+		where cdelete=0
+		<if test="name != null and name != ''">
+			and cNAME LIKE '%${name}%'
+		</if>
+		limit #{pageNow},#{pageSize}
+	</select>
+	<!-- 获取所有用户 右边辅助下拉框用 -->
+	<select id="getCustomers" resultType="com.cyh.pojo.Customer">
+		select * from customer
+	</select>
+	<!-- 查询已删除的用户总条数 -->
+	<select id="getDCustomerCount" resultType="java.lang.Integer"
+		parameterType="com.cyh.pojo.CustomerPage">
+		SELECT
+		count(*)
+		FROM
+		customer
+		where cdelete=0
+		<if test="name != null and name != ''">
+			and cNAME LIKE '%${name}%'
+		</if>
+	</select>
+
+	<!-- 修改用户 -->
+	<update id="updateCustomer" parameterType="com.cyh.pojo.Customer">
+		UPDATE
+		customer
+		SET
+		cname =#{cname},cprice=#{cprice},caddress=#{caddress},cstartime=#{cstartime}
+		WHERE cid=#{cid}
+	</update>
+
+	<!-- ajax -->
+	<select id="getCustomerByName" parameterType="java.lang.String"
+		resultType="com.cyh.pojo.Customer">
+		select c.cid,c.cname from customer c where cname like '%${value}%'
+	</select>
+	<select id="getCustomerByLikeId" parameterType="java.lang.Integer"
+		resultType="com.cyh.pojo.Customer">
+		select c.cid,c.cname from customer c where cid like '%${value}%'
+	</select>
+
+	<select id="getBT" resultType="com.cyh.pojo.Customer"
+		parameterType="com.cyh.pojo.CustomerPage">
+		select * from customer where cstatus =0 limit #{pageNow},#{pageSize}
+	</select>
+	<select id="getBTC" resultType="java.lang.Integer"
+		parameterType="com.cyh.pojo.CustomerPage">
+		SELECT
+		count(*)
+		FROM
+		customer
+		where cstatus =0
+	</select>
+
+	<!-- 查询总的信息条数 -->
+	<select id="getAllCustomerCount" resultType="java.lang.Integer">
+		SELECT
+		count(*)
+		FROM
+		customer
+	</select>
+
+	<!-- 查询当月未录入用户详情 -->
+	<select id="getNotImportCustomerByMonth" resultType="Map">
+		SELECT
+			t1.*,
+			t2.cstatus
+		FROM
+			bill t1,
+			customer t2,
+			monthbill t3
+		WHERE
+			t1.uid = t2.cid
+			AND t2.cid = t3.uid
+			AND t3.${month} = 0
+	</select>
+</mapper>

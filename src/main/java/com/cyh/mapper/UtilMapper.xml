@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cyh.mapper.UtilMapper" >
+	<update id="excelSrcSetting"  parameterType="com.cyh.pojo.ConfigureInfo">
+			update configureinfo set path=#{path},time=#{time},update_user=#{update_user}  where name = #{name}
+	</update>
+
+	<select id="getConfigureInfoByName" parameterType="java.lang.String" resultType="com.cyh.pojo.ConfigureInfo">
+			select * from configureinfo where name=#{value}
+	</select>
+
+	<select id="checkedTableExist" parameterType="java.lang.String" resultType="java.lang.String">
+			SHOW TABLES IN water WHERE Tables_in_water = '${table}${year}'
+	</select>
+
+	<update id="createTab" parameterType="java.lang.String">
+		${tableStatement}
+	</update>
+
+	<insert id="importDateByTableName" parameterType="java.lang.String" >
+		insert into ${newTable} select * from ${oldTable}
+	</insert>
+
+	<insert id="insertConfigureInfoLogs" parameterType="java.lang.String" >
+		insert into configureinfologs(event) values ( #{log} )
+	</insert>
+
+	<update id="updateOldTabForZero" parameterType="java.lang.String">
+		${sql}
+	</update>
+
+	<update id="updateYear" >
+		update configureinfo set path=#{year}  where name = #{table}
+	</update>
+
+	<insert id="replaceTransitionModel" parameterType="com.cyh.pojo.TransitionModel" >
+		replace into transitionmodel() values(#{customer_id},#{customer_name},#{year},#{month},#{create_time},#{water_consumption},#{month_bill_cost});
+	</insert>
+
+	<select id="getOperateCutomerCountByToDate" parameterType="com.cyh.pojo.TransitionModel" resultType="java.lang.Integer">
+			select count(*) from transitionmodel where create_time like '%${create_time}%'
+	</select>
+
+	<update id="checkStateForTask" >
+		update tasktable set execute_state = 1 , update_time = #{nextDate} , execute_ip = #{execute_ip}
+		where task_name = #{taskName} and execute_state = 0 and update_time like '${thisDate} %'
+	</update>
+
+	<update id="updateTaskState">
+		update tasktable set execute_state = 0 where task_name = #{taskName}
+	</update>
+</mapper>

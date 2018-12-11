@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cyh.mapper.MonthBillMapper">
+	<insert id="addMBill" parameterType="com.cyh.pojo.Customer">
+		insert into
+		monthbill(id,uid,uname,`mone`,mtwo,mthree,mfour,mfive,msix,mseven,meight,mnine,mten,meleven,mtwelve)
+		values(#{cid},#{cid},#{cname},0,0,0,0,0,0,0,0,0,0,0,0)
+	</insert>
+	<!-- //修改了个人信息表后 月账单表里的信息也要改 -->
+	<update id="updateMBill" parameterType="com.cyh.pojo.Customer">
+		update monthbill set uname=#{cname} where uid=#{cid}
+	</update>
+
+	<!-- 修改账单表 如果是第一个月 -->
+	<update id="updatemone" parameterType="com.cyh.pojo.Middle">
+		update monthbill set mone=#{firstTotal} where uid=#{uid}
+	</update>
+	<!-- 修改账单表 如果是第二个月 -->
+	<update id="updatemtwo" parameterType="com.cyh.pojo.Middle">
+		update monthbill set mtwo=#{firstTotal} where uid=#{uid}
+	</update>
+	<!-- 修改账单表 如果是第3个月 -->
+	<update id="updatemthree" parameterType="com.cyh.pojo.Middle">
+		update monthbill set mthree=#{firstTotal} where uid=#{uid}
+	</update>
+	<!-- 修改账单表 如果是第4个月 -->
+	<update id="updatemfour" parameterType="com.cyh.pojo.Middle">
+		update monthbill set mfour=#{firstTotal} where uid=#{uid}
+	</update>
+	<!-- 修改账单表 如果是第5个月 -->
+	<update id="updatemfive" parameterType="com.cyh.pojo.Middle">
+		update monthbill set mfive=#{firstTotal} where uid=#{uid}
+	</update>
+	<!-- 修改账单表 如果是第6个月 -->
+	<update id="updatemsix" parameterType="com.cyh.pojo.Middle">
+		update monthbill set msix=#{firstTotal} where uid=#{uid}
+	</update>
+	<!-- 修改账单表 如果是第7个月 -->
+	<update id="updatemseven" parameterType="com.cyh.pojo.Middle">
+		update monthbill set mseven=#{firstTotal} where uid=#{uid}
+	</update>
+	<!-- 修改账单表 如果是第8个月 -->
+	<update id="updatemeight" parameterType="com.cyh.pojo.Middle">
+		update monthbill set meight=#{firstTotal} where uid=#{uid}
+	</update>
+	<!-- 修改账单表 如果是第9个月 -->
+	<update id="updatemnine" parameterType="com.cyh.pojo.Middle">
+		update monthbill set mnine=#{firstTotal} where uid=#{uid}
+	</update>
+	<!-- 修改账单表 如果是第10个月 -->
+	<update id="updatemten" parameterType="com.cyh.pojo.Middle">
+		update monthbill set mten=#{firstTotal} where uid=#{uid}
+	</update>
+	<!-- 修改账单表 如果是第11个月 -->
+	<update id="updatemeleven" parameterType="com.cyh.pojo.Middle">
+		update monthbill set meleven=#{firstTotal} where uid=#{uid}
+	</update>
+	<!-- 修改账单表 如果是第12个月 -->
+	<update id="updatemtwelve" parameterType="com.cyh.pojo.Middle">
+		update monthbill set mtwelve=#{firstTotal} where uid=#{uid}
+	</update>
+	<!-- 查询所有账单 -->
+	<select id="getMBill" resultType="com.cyh.pojo.MonthBill">
+		select * from monthbill
+	</select>
+
+	<!-- 根据cid修改此cid后面的所有用户的cid +1 (循环修改) -->
+	<update id="updateMBillCidByCid" parameterType="Map">
+		UPDATE
+		monthbill
+		SET
+		id = #{afterCid},
+		uid = #{afterCid}
+		WHERE uid=#{beforeCid}
+	</update>
+
+	<!-- 将id修改到固定id，方便区间移位 -->
+	<update id="updateMBillIdfromRegular" parameterType="java.lang.Integer">
+		UPDATE
+		monthbill
+		SET
+		id = 99999,
+		uid = 99999
+		WHERE uid=#{cid}
+	</update>
+	<!-- 1.修改了个人信息表后 账单表里的信息也要改 2.将固定id修改为目标id -->
+	<update id="updateMBillTargetIDfromRegular" parameterType="com.cyh.pojo.Customer">
+		update monthBill set id=#{cid},uid=#{cid},uname=#{cname} where
+		uid=99999
+	</update>
+	<!-- 获取当月录入用户总数 一月 -->
+	<select id="selectmone"   resultType="java.lang.Integer">
+		select count(*) from monthbill where mone != 0
+	</select>
+	<!-- 获取当月录入用户总数 二月 -->
+	<select id="selectmtwo"   resultType="java.lang.Integer">
+		select count(*) from monthbill where mtwo != 0
+	</select>
+	<!-- 获取当月录入用户总数 三月 -->
+	<select id="selectmthree"   resultType="java.lang.Integer">
+		select count(*) from monthbill where mthree != 0
+	</select>
+	<!-- 获取当月录入用户总数 四月 -->
+	<select id="selectmfour"   resultType="java.lang.Integer">
+		select count(*) from monthbill where mfour != 0
+	</select>
+	<!-- 获取当月录入用户总数 五月 -->
+	<select id="selectmfive"   resultType="java.lang.Integer">
+		select count(*) from monthbill where mfive != 0
+	</select>
+	<!-- 获取当月录入用户总数 六月 -->
+	<select id="selectmsix"   resultType="java.lang.Integer">
+		select count(*) from monthbill where msix != 0
+	</select>
+	<!-- 获取当月录入用户总数 七月 -->
+	<select id="selectmseven"   resultType="java.lang.Integer">
+		select count(*) from monthbill where mseven != 0
+	</select>
+	<!-- 获取当月录入用户总数 八月 -->
+	<select id="selectmeight"   resultType="java.lang.Integer">
+		select count(*) from monthbill where meight != 0
+	</select>
+	<!-- 获取当月录入用户总数 九月 -->
+	<select id="selectmnine"   resultType="java.lang.Integer">
+		select count(*) from monthbill where mnine != 0
+	</select>
+	<!-- 获取当月录入用户总数 十月 -->
+	<select id="selectmten"   resultType="java.lang.Integer">
+		select count(*) from monthbill where mten != 0
+	</select>
+	<!-- 获取当月录入用户总数 十一月 -->
+	<select id="selectmeleven"   resultType="java.lang.Integer">
+		select count(*) from monthbill where meleven != 0
+	</select>
+	<!-- 获取当月录入用户总数 十二月 -->
+	<select id="selectmtwelve"   resultType="java.lang.Integer">
+		select count(*) from monthbill where mtwelve != 0
+	</select>
+</mapper>

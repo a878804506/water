@@ -1,0 +1,30 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-3.2.xsd 
+		http://www.springframework.org/schema/mvc 
+		http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd 
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context-3.2.xsd 
+		http://www.springframework.org/schema/aop 
+		http://www.springframework.org/schema/aop/spring-aop-3.2.xsd 
+		http://www.springframework.org/schema/tx 
+		http://www.springframework.org/schema/tx/spring-tx-3.2.xsd ">
+		
+	<!-- 配置service
+	<bean id="userService" class="com.cyh.service.impl.UserServiceImpl"></bean>
+	-->
+	<!-- springContextUtilService 此bean用于在定时任务中可调用service层-->
+	<bean id="springContextUtilService" class="com.cyh.util.SpringContextUtil"  />
+
+	<bean id="userService" class="com.cyh.service.impl.UserServiceImpl"></bean>
+	<bean id="customerService" class="com.cyh.service.impl.CustomerServiceImpl"></bean>
+	<bean id="billService" class="com.cyh.service.impl.BillServiceImpl"></bean>
+	<bean id="monthBillService" class="com.cyh.service.impl.MonthBillServiceImpl"></bean>
+	<bean id="operator_logService" class="com.cyh.service.impl.Operator_logServiceImpl"></bean>
+	<bean id="utilService" class="com.cyh.service.impl.UtilServiceImpl"></bean>
+	<bean id="waterConsumptionService" class="com.cyh.service.impl.WaterConsumptionServiceImpl"></bean>
+	<bean id="menuPermissionService" class="com.cyh.service.impl.MenuPermissionServiceImpl"></bean>
+</beans>

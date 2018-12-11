@@ -1,0 +1,77 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-3.2.xsd 
+		http://www.springframework.org/schema/mvc 
+		http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd 
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context-3.2.xsd 
+		http://www.springframework.org/schema/aop 
+		http://www.springframework.org/schema/aop/spring-aop-3.2.xsd 
+		http://www.springframework.org/schema/tx 
+		http://www.springframework.org/schema/tx/spring-tx-3.2.xsd ">
+
+	<!-- 引入属性文件-->
+	<bean class="com.cyh.common.UploadConfigurer">
+		<property name="location" value="classpath:application-dev.properties"/>
+	</bean>
+	<!-- 加载配置文件 -->
+	<!--<context:property-placeholder  location="classpath:db.properties" />-->
+
+	<!-- 数据库连接池 -->
+	<bean id="dataSource"  class="com.alibaba.druid.pool.DruidDataSource"  destroy-method="close">
+		<property name="driverClassName" value="${jdbc.driver}" />
+		<property name="url" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.encrypt_password}" />
+		<!-- 连接池中可同时连接的最大的连接数（默认值为8，调整为20，高峰单机器在20并发左右，自己根据应用场景定） -->
+		<property name="maxActive" value="20" />
+		<!--连接池中最小的空闲的连接数，低于这个数量会被创建新的连接（默认为0，调整为5，该参数越接近maxIdle，性能越好， 因为连接的创建和销毁，都是需要消耗资源的；但是不能太大，因为在机器很空闲的时候，也会创建低于minidle个数的连接，类似于jvm参数中的Xmn设置） -->
+		<property name="minIdle" value="5" />
+		<!-- 最大等待时间，当没有可用连接时，连接池等待连接释放的最大时间，超过该时间限制会抛出异常， 如果设置-1表示无限等待（默认为无限，调整为60000ms，避免因线程池不够用，而导致请求被无限制挂起） -->
+		<property name="maxWait" value="60000" />
+
+		<!-- 验证链接是否有效的sql语句 -->
+		<property name="validationQuery"
+			value="SELECT 1" />
+		<!-- 获取链接之前是否测试链接的可用性 -->
+		<property name="testOnBorrow" value="true" />
+		<!-- 连接被归还到连接池中时是否校验可用validationQuery必须给定合法值 -->
+		<property name="testOnReturn" value="false" />
+		<!-- 连接被空闲连接回收器检测回收时否校验可用validationQuery必须给定合法值 指明连接是否被空闲连接回收器(如果有)进行检验.如果检测失败,则连接将被从池中去除. -->
+		<property name="testWhileIdle" value="true" />
+
+		<!--超过时间限制，回收没有用(废弃)的连接（默认为 300秒，调整为180） -->
+		<property name="removeAbandonedTimeout" value="90" />
+		<!--超过removeAbandonedTimeout时间后，是否进行没用连接（废弃）的回收（默认为false，调整为true) -->
+		<property name="removeAbandoned" value="true" />
+
+		<!-- 每30秒运行一次空闲连接回收器 -->
+		<property name="timeBetweenEvictionRunsMillis" value="60000" />
+		<!-- 在每次空闲连接回收器线程(如果有)运行时检查的连接数量 -->
+		<property name="numTestsPerEvictionRun" value="30" />
+		<!-- 连接池中连接，在时间段内一直空闲， 被逐出连接池的时间 (池中的连接空闲60分钟后被回收) -->
+		<property name="minEvictableIdleTimeMillis" value="3600000" />
+		<!-- 连接被泄露时是否打印 标记当连接被回收时是否打印程序的stack traces日志（默认为false，未调整 -->
+		<property name="logAbandoned" value="false" />
+	</bean>
+
+	<!-- mapper配置 -->
+	<!-- 让spring管理sqlsessionfactory 使用mybatis和spring整合包中的 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!-- 数据库连接池 -->
+		<property name="dataSource" ref="dataSource" />
+		<!-- 加载mybatis的全局配置文件 -->
+		<property name="configLocation"  value="classpath:SqlMapConfig.xml" />
+	</bean>
+	<!-- MapperScannerConfigurer根据mapper自动生成id，这个id是类名的首字母小写 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.cyh.mapper" />
+		<!-- value="sqlSessionFactory":注入的是 sqlSessionFactory name="sqlSessionFactoryBeanName"是将sqlSessionFactory注入到org.java.mapper包里的所有mapper里面，所以是根据sqlSessionFactoryBeanName -->
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+	</bean>
+</beans>
