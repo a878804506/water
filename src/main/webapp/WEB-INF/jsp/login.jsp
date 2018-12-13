@@ -139,7 +139,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	    <div id="cloud2" class="cloud"></div>
     </div>  
 	<div class="logintop">    
-	    <span>欢迎登录水务管理系统</span>
+	    <span>欢迎登录水务管理系统--这里是dev环境！！！</span>
 	    <ul>
 		    <li><a href="#">帮助</a></li>
 		    <li><a href="#" onmouseover="display()" onmouseout="disappear()">关于</a></li>
