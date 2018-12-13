@@ -2,11 +2,11 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>abc</groupId>
+	<groupId>water</groupId>
 	<artifactId>water</artifactId>
 	<packaging>war</packaging>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>abc Maven Webapp</name>
+	<name>water Maven Webapp</name>
 
 	<dependencies>
 		<dependency>
@@ -228,7 +228,7 @@
 		<version>3.0.0</version> <configuration> <warSourceDirectory>WebRoot</warSourceDirectory> 
 		</configuration> </plugin> </plugins> </build> -->
 	<build>
-		<finalName>abc</finalName>
+		<finalName>ROOT</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
