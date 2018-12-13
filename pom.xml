@@ -248,6 +248,7 @@
 					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -270,10 +271,10 @@
 								<include>**/web.xml</include>
 							</includes>
 						</resource>
-						
-						
+
+
 						<resource>
-							<directory>src/main/java/com/cyh/mapper</directory>
+							<directory><!--src/main/java/com/cyh/mapper-->src/main/java</directory>
 							<includes>
 								<include>**/*.xml</include>
 							</includes>
