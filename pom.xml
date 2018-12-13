@@ -274,7 +274,7 @@
 
 
 						<resource>
-							<directory><!--src/main/java/com/cyh/mapper-->src/main/java</directory>
+							<directory>src/main/java/com/cyh/mapper</directory>
 							<includes>
 								<include>**/*.xml</include>
 							</includes>
@@ -291,5 +291,23 @@
 				</configuration>
 			</plugin>
 		</plugins>
+
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>**/*.xml</include>
+				</includes>
+				<filtering>false</filtering>
+			</resource>
+			<resource>
+				<directory>src/main/java</directory>
+				<includes>
+					<include>**/*.properties</include>
+					<include>**/*.xml</include>
+				</includes>
+				<filtering>false</filtering>
+			</resource>
+		</resources>
 	</build>
 </project>
