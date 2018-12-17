@@ -17,7 +17,7 @@ public class Configuration{
 	static{
 		InputStream inputStream = null;
 		try{
-			inputStream = Configuration.class.getClassLoader().getResourceAsStream("application-dev.properties");
+			inputStream = Configuration.class.getClassLoader().getResourceAsStream("application-prod.properties");
 			Properties prop = new Properties();
 			prop.load(inputStream);
 			Iterator<Entry<Object,Object>> it = prop.entrySet().iterator();
