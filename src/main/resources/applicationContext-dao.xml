@@ -17,7 +17,18 @@
 
 	<!-- 引入属性文件-->
 	<bean class="com.cyh.common.UploadConfigurer">
-		<property name="location" value="classpath:application-dev.properties"/>
+		<property name="order" value="1" />
+		<property name="ignoreUnresolvablePlaceholders" value="true" />
+		<property name="locations">
+			<list>
+				<value>classpath:application.properties</value>
+				<value>classpath:application-dev.properties</value>
+				<value>classpath:application-prod.properties</value>
+			</list>
+		</property>
+		<property name="fileEncoding">
+			<value>UTF-8</value>
+		</property>
 	</bean>
 	<!-- 加载配置文件 -->
 	<!--<context:property-placeholder  location="classpath:db.properties" />-->
