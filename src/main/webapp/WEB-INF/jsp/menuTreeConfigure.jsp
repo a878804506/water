@@ -97,12 +97,27 @@
                         data: {uid: uid},
                         dataType: "json",
                         success: function (data) {
-                            //销毁菜单树
-                            var zTreeObj = $.fn.zTree.getZTreeObj("treeDemo");
-                            zTreeObj.destroy();
-                            //重建菜单树
-                            var nodes = getMenuTreeData(data);
-                            $.fn.zTree.init($("#treeDemo"), setting, nodes);
+                            if(data != null){
+                                var zTreeObj = $.fn.zTree.getZTreeObj("treeDemo");
+                                var node = zTreeObj.getNodes();
+                                var nodes = zTreeObj.transformToArray(node);
+                                $.each(nodes,function(index,node){
+                                    var isChecked = false ;
+                                    $.each(data,function(index,d){
+                                        if(node.id == d){
+                                            isChecked = true;
+                                            node.checked = true;
+                                        }
+                                    })
+                                    if(isChecked){
+                                        zTreeObj.updateNode(node);
+                                    }else{
+                                        node.checked = false;
+                                        zTreeObj.updateNode(node);
+                                    }
+                                })
+                            }
+
                         }
                     });
                 }
@@ -147,7 +162,12 @@
             $.each(menus,function(index,menu){
                 var menuObject=new Object();
                 if(menu.parentId == 1){
-                    if(menu.id == 11 || menu.id == 21){
+                    menuObject.id=menu.id;
+                    menuObject.pId=menu.parentId;
+                    menuObject.name=menu.name;
+                    menuObject.open=true;
+                    zNodes.push(menuObject);
+                    /*if(menu.id == 11 || menu.id == 21){
                         menuObject.id=menu.id;
                         menuObject.pId=menu.parentId;
                         menuObject.name=menu.name;
@@ -159,7 +179,7 @@
                         menuObject.name=menu.name;
                         menuObject.open=false;
                         zNodes.push(menuObject);
-                    }
+                    }*/
                 }else{
                     menuObject.id=menu.id;
                     menuObject.pId=menu.parentId;
