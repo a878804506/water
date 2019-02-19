@@ -264,11 +264,13 @@ function createWebSocketClient(sessionId,userId){
 
         socket.onopen = function(event) {
             $("#responseText").val("连接开启!");
+            console.log("连接开启!");
             setInterval("getNewContactsListFromServer()",10000);
         };
 
         socket.onclose = function(event) {
             $("#responseText").val("连接被关闭!");
+            console.log("连接开启!");
         };
 
     } else {

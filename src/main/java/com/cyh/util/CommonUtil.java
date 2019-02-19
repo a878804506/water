@@ -2,6 +2,7 @@ package com.cyh.util;
 
 import com.cyh.common.Constants;
 import com.cyh.service.UserService;
+import com.cyh.util.zookeeperUtil.ZookeeperConnectSessionWatcherUtil;
 import redis.clients.jedis.Jedis;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -41,6 +42,11 @@ public class CommonUtil {
                     return nickName1.compareTo(nickName2);
                 });
                 jedis.set(RedisDB.systemUsers.getBytes(), SerializeUtil.serialize(allStrutsUsers));
+
+                //启动zookeeper保活线程
+                ZookeeperConnectSessionWatcherUtil zcsw = new ZookeeperConnectSessionWatcherUtil();
+                Thread zookeeperReConnectThread = new Thread(zcsw);
+                zookeeperReConnectThread.start();
             }catch (Exception e){
                 e.printStackTrace();
                 RedisDB.returnBrokenResource(jedis);
