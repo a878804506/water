@@ -10,7 +10,7 @@ public class ZookeeperConnectSessionWatcherUtil implements Runnable {
     public void run() {
         try {
             ZookeeperUtil.zkConnect();
-            if(!ZookeeperUtil.zkExists()){
+            if(!ZookeeperUtil.zkExists(ZookeeperUtil.PATH)){
                 ZookeeperUtil.zkCreate("once create this node.".getBytes());
             }
 

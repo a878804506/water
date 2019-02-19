@@ -209,7 +209,6 @@
 			<version>3.6</version>
 		</dependency>
 
-
 		<!-- zookeeper 客户端的操作jar-->
 		<dependency>
 			<groupId>org.apache.curator</groupId>

@@ -50,7 +50,7 @@ public class SessionListenerUtil implements HttpSessionListener,Runnable {
         }
     }
 
-    //销毁session时将redis中得用户状态改为离线
+    //销毁session时将redis中得用户状态改为离线,，并且再zk的waterUserForOnline节点下删除一个有规律的节点标识
     private static void updateUserStrutsToOffLine(User user){
         Jedis jedis = null;
         try {
@@ -71,6 +71,9 @@ public class SessionListenerUtil implements HttpSessionListener,Runnable {
             }
             redis_contactsList.add(thisUser);
             jedis.set(RedisDB.systemUsers.getBytes(), SerializeUtil.serialize(redis_contactsList));
+
+            //移除相应的子节点
+            ZookeeperUtil.zkDeleteSon(user.getId());
         }catch (Exception e){
             e.printStackTrace();
             RedisDB.returnBrokenResource(jedis);
@@ -79,7 +82,7 @@ public class SessionListenerUtil implements HttpSessionListener,Runnable {
         }
     }
 
-    //用户登陆时启动线程将redis中得用户状态改为在线
+    //用户登陆时启动线程将redis中得用户状态改为在线，并且再zk的waterUserForOnline节点下增加一个有规律的节点标识
     @Override
     public void run() {
         Jedis jedis = null;
@@ -103,7 +106,7 @@ public class SessionListenerUtil implements HttpSessionListener,Runnable {
             jedis.set(RedisDB.systemUsers.getBytes(), SerializeUtil.serialize(redis_contactsList));
 
             //在zookeeper上通知聊天架构程序及时更新最新的在线联系人列表
-            ZookeeperUtil.zkUpdate((""+updateToRedis_UserId).getBytes());
+            ZookeeperUtil.zkCreateSon(updateToRedis_UserId);
         }catch (Exception e){
             e.printStackTrace();
             RedisDB.returnBrokenResource(jedis);

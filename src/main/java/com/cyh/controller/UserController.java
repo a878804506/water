@@ -124,7 +124,7 @@ public class UserController {
             session.setAttribute("webSocketChatSwitch", Constants.webSocketChatSwitch);
             if(Constants.webSocketChatSwitch){  //再在session中存入聊天服务器所在地址
                 session.setAttribute("webSocketChatAddress", Constants.webSocketChatAddress);
-                //启动一个线程将当前登陆用户在线状态更新到redis中
+                //启动一个线程将当前登陆用户在线状态更新到redis中,并且再zk上创建一个有规律的子节点
                 SessionListenerUtil slu = new SessionListenerUtil(loginuser.getId());
                 Thread thread = new Thread(slu);
                 thread.start();

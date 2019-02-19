@@ -24,7 +24,9 @@ public class ZookeeperUtil {
 
     private static final int CONNECTIONTIMEOUT = 60000;
 
-    private static final String PATH = "/waterUserForOnline";
+    static final String PATH = "/waterUserForOnline";
+
+    private static final String SON_PATH = "/onLine_";
 
     //拥有所有的权限
     private static final String AUTHINFO_ALL = "admin:cyh19930807@!";
@@ -81,8 +83,23 @@ public class ZookeeperUtil {
         }
     }
 
+    /**
+     * 创建子节点
+     */
+    public static void zkCreateSon(int userId) {
+        String thisPath = PATH+SON_PATH+userId;
+        try {
+            if (zkExists(thisPath))
+                return ; //存在
+            client.inTransaction().create().withMode(CreateMode.PERSISTENT).withACL(acls).forPath(thisPath,(""+userId).getBytes()).and().commit();
+        } catch (Exception e) {
+            System.out.println("["+CommonUtil.DateToString(new Date(),"yyyy-MM-dd HH:mm:ss")+"] 子节点创建失败!");
+            e.printStackTrace();
+        }
+    }
+
     // 读取数据节点数据
-    public static String zkGetData() {
+    /*public static String zkGetData() {
         String result = "";
         try {
             byte [] data = client.getData().forPath(PATH);
@@ -91,10 +108,10 @@ public class ZookeeperUtil {
             e.printStackTrace();
         }
         return result;
-    }
+    }*/
 
     // 修改节点中的数据
-    public static Boolean zkUpdate(byte[] data) {
+    /*public static Boolean zkUpdate(byte[] data) {
         //判断节点是否存在
         if (!zkExists())
             return false;
@@ -106,12 +123,15 @@ public class ZookeeperUtil {
             return false;
         }
         return true;
-    }
+    }*/
 
-    // 删除节点
-    public static void zkDelete() {
+    // 删除相应的子节点
+    public static void zkDeleteSon(int userId) {
+        String thisPath = PATH+SON_PATH+userId;
         try {
-            client.inTransaction().delete().forPath(PATH).and().commit();//只能删除叶子节点
+            if (!zkExists(thisPath))
+                return ; //不存在
+            client.inTransaction().delete().forPath(thisPath).and().commit();//只能删除叶子节点
             //client.delete().deletingChildrenIfNeeded().forPath("/Russia");//删除一个节点,并递归删除其所有子节点
             //client.delete().withVersion(5).forPath("/America");//强制指定版本进行删除
         } catch (Exception e) {
@@ -120,9 +140,9 @@ public class ZookeeperUtil {
     }
 
     // 判断节点是否存在
-    public static Boolean zkExists(){
+    public static Boolean zkExists(String path){
         try {
-            Stat stat = client.checkExists().forPath(PATH);
+            Stat stat = client.checkExists().forPath(path);
             return stat != null ? true : false;
         } catch (Exception e) {
             e.printStackTrace();
