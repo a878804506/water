@@ -159,7 +159,7 @@ function createWebSocketClient(sessionId,userId){
         window.WebSocket = window.MozWebSocket;
     }
     if (window.WebSocket) {
-        socket = new WebSocket("ws://"+webSocketChatAddress+":7397?webSocketLogin="+webSocketLogin);
+        socket = new WebSocket("ws://"+webSocketChatAddress+":25214?webSocketLogin="+webSocketLogin);
 
         socket.onmessage = function(event) {
             var dataJson = JSON.parse(event.data);
@@ -169,7 +169,7 @@ function createWebSocketClient(sessionId,userId){
             }else if(dataJson.type == 0){ //用户登陆   服务器推送的联系人列表消息
                 //刷新成最新的联系人列表
                 createNewContactsList(dataJson.data,true);
-            }else if(dataJson.type == 1){//服务器推送过来最新联系人列表
+            }else if(dataJson.type == 1){//服务器推送过来最新联系人列表，有用户上线时的最新联系人列表
                 //联系人上线声音提示
                 document.getElementById("onLine").play();
                 //刷新成最新的联系人列表
@@ -253,10 +253,7 @@ function createWebSocketClient(sessionId,userId){
                 $(document).ready(function () {
                     $("#chatBox-content-demo").scrollTop($("#chatBox-content-demo")[0].scrollHeight);
                 });
-            }else if(dataJson.type == 5){  //页面定时拉取最新联系人列表
-
-                ta.val(ta.val() + '\n' +  "最新联系人列表请求成功！");
-
+            }else if(dataJson.type == 5){  //最新联系人列表  有用户下线时的最新联系人列表
                 //刷新成最新的联系人列表
                 createNewContactsList(dataJson.data,false);
             }
@@ -265,7 +262,6 @@ function createWebSocketClient(sessionId,userId){
         socket.onopen = function(event) {
             $("#responseText").val("连接开启!");
             console.log("连接开启!");
-            setInterval("getNewContactsListFromServer()",10000);
         };
 
         socket.onclose = function(event) {
@@ -375,13 +371,13 @@ function addClickForContacts(){
 }
 
 //页面定时从服务器获取最新列表
-function getNewContactsListFromServer(){
+/*function getNewContactsListFromServer(){
     var sendMsg = {};
     sendMsg.id = "1";
     sendMsg.userId = userId;
     sendMsg.type = "5";
     send(sendMsg);
-}
+}*/
 
 //刷新成最新的联系人列表
 function createNewContactsList(newContactsList,isShow){
@@ -413,6 +409,7 @@ function createNewContactsList(newContactsList,isShow){
             contactsListForPicture.set(newContactsList[i].id,newContactsList[i].img);
         }
     }
+    // isShow
     if(isShowAllMessageImg && isShow){
         $("#allMessage").empty();
         $("#allMessage").html("<img src='"+projectPath+"/images/message.gif'/>");
