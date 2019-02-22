@@ -98,6 +98,22 @@ public class ZookeeperUtil {
         }
     }
 
+    /**
+     * 创建路径下的节点
+     */
+    public static Boolean zkCreateToPath(String path,String ipAndPort) {
+        try {
+            if (zkExists(path))
+                return false; //存在
+            client.inTransaction().create().withMode(CreateMode.EPHEMERAL).withACL(acls).forPath(path,ipAndPort.getBytes()).and().commit();
+        } catch (Exception e) {
+            System.out.println("["+CommonUtil.DateToString(new Date(),"yyyy-MM-dd HH:mm:ss")+"] 子节点创建失败!");
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
     // 读取数据节点数据
     /*public static String zkGetData() {
         String result = "";
@@ -134,6 +150,17 @@ public class ZookeeperUtil {
             client.inTransaction().delete().forPath(thisPath).and().commit();//只能删除叶子节点
             //client.delete().deletingChildrenIfNeeded().forPath("/Russia");//删除一个节点,并递归删除其所有子节点
             //client.delete().withVersion(5).forPath("/America");//强制指定版本进行删除
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // 删除路径下的节点
+    public static void zkDeleteToPath(String path) {
+        try {
+            if (!zkExists(path))
+                return ; //不存在
+            client.inTransaction().delete().forPath(path).and().commit();//只能删除叶子节点
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -219,9 +246,9 @@ public class ZookeeperUtil {
     }
 
     //注册监听器，用于监听PATH节点下所有子节点的变化
-    public static void zkPathChildrenCache(){
+    public static void zkPathChildrenCache(String path){
         try {
-            PathChildrenCache cache = new PathChildrenCache(client, PATH, true);
+            PathChildrenCache cache = new PathChildrenCache(client, path, true);
             PathChildrenCacheListener pccl = new PathChildrenCacheListener() {
                 @Override
                 public void childEvent(CuratorFramework client,PathChildrenCacheEvent event) {

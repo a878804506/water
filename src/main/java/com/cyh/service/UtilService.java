@@ -16,7 +16,7 @@ public interface UtilService {
     //导入数据
     int importDateByTableName(String oldTable,String newTable);
     //轮询记录
-    int insertConfigureInfoLogs(String log);
+    int insertConfigureInfoLogs(String log,String ipAndPort,String byWay);
     //初始化数据表
     int updateOldTabForZero(String sql);
     //修改到下一年的年份

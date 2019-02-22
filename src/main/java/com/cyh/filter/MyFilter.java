@@ -16,13 +16,13 @@ public class MyFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) {
         System.out.println("调用init方法");
+        //项目启动加载用户信息到redis中
+        CommonUtil.getAllStrutsUsersToRedis();
+
         if(Constants.timedTaskSwitch){ //定时任务总开关
             //进行任务调度
             new TimerRun().run();
         }
-
-        //项目启动加载用户信息到redis中
-        CommonUtil.getAllStrutsUsersToRedis();
     }
 
     @Override

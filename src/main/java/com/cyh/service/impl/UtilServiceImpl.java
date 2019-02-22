@@ -38,8 +38,8 @@ public class UtilServiceImpl implements UtilService {
     }
 
     @Override
-    public int insertConfigureInfoLogs(String log) {
-        return utilMapper.insertConfigureInfoLogs(log);
+    public int insertConfigureInfoLogs(String log,String ipAndPort,String byWay) {
+        return utilMapper.insertConfigureInfoLogs(log,ipAndPort,byWay);
     }
 
     @Override

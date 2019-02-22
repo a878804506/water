@@ -16,7 +16,7 @@ public interface UtilMapper {
     //导入数据
     int importDateByTableName(@Param(value="oldTable")String oldTable,@Param(value="newTable")String newTable);
     //轮询记录
-    int insertConfigureInfoLogs(String log);
+    int insertConfigureInfoLogs(@Param(value="log")String log,@Param(value="ipAndPort")String ipAndPort,@Param(value="byWay")String byWay);
     //初始化数据表
     int updateOldTabForZero(@Param(value="sql")String sql);
     //修改到下一年的年份

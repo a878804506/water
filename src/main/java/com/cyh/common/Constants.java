@@ -31,4 +31,7 @@ public class Constants {
 
     //webSocketChat程序所在服务器  用户登录后页面js连接webSocket时所用  基于system.webSocketChatSwitch为true时有用
     public static final String webSocketChatAddress = UploadConfigurer.propMap.get("system.webSocketChatAddress");
+
+    //配置使用数据库竞锁还是使用zookeeper竞锁，目前作用于项目集群中竞争执行每日任务，且只有一个服务能够执行每日任务
+    public static final Boolean useZookeeperLock = "true".equalsIgnoreCase(UploadConfigurer.propMap.get("system.useZookeeperLock"))?true:false;
 }

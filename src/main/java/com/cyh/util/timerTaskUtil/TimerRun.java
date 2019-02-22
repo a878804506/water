@@ -21,6 +21,7 @@ public class TimerRun {
         if(Constants.backupAndResetTables_JOB_Switch){
             //0 59 23 1/1 * ?  每天23点59分执行
             //*/30 * * * * ?  每30秒执行一次
+            //    0 1-59 * * * ?    每分钟执行一次
             new BaseTimer().schedulerJob(backupAndResetTables_JOB.class,"backupAndResetTables_JOB","xxx","0 59 23 1/1 * ?");
         }
     }

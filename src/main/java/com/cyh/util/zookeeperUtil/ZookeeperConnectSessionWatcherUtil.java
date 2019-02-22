@@ -1,8 +1,6 @@
 package com.cyh.util.zookeeperUtil;
 
-import com.cyh.util.CommonUtil;
-
-import java.util.Date;
+import com.cyh.util.timerTaskUtil.job.backupAndResetTables_JOB;
 
 public class ZookeeperConnectSessionWatcherUtil implements Runnable {
 
@@ -11,20 +9,23 @@ public class ZookeeperConnectSessionWatcherUtil implements Runnable {
         try {
             ZookeeperUtil.zkConnect();
             if(!ZookeeperUtil.zkExists(ZookeeperUtil.PATH)){
-                ZookeeperUtil.zkCreate("once create this node.".getBytes());
+                ZookeeperUtil.zkCreate("once create this node for user state.".getBytes());
             }
-
+            if(!ZookeeperUtil.zkExists(backupAndResetTables_JOB.BACKUPANDRESETTABLESPATH)){
+                ZookeeperUtil.zkCreate("once create this node for back.".getBytes());
+            }
             ZookeeperUtil.zkNodeCache();
-            ZookeeperUtil.zkPathChildrenCache();
+            ZookeeperUtil.zkPathChildrenCache(ZookeeperUtil.PATH);
+            ZookeeperUtil.zkPathChildrenCache(backupAndResetTables_JOB.BACKUPANDRESETTABLESPATH);
 
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("初次连接zookeeper服务失败！请注意！！");
             return;
         }
-        while (true){
+        /*while (true){
             try {
-                /*switch (ZookeeperUtil.zoo.getState().toString()){
+                switch (ZookeeperUtil.zoo.getState().toString()){
                     case CONNECTING:
                         System.out.println("["+CommonUtil.DateToString(new Date(),"yyyy-MM-dd HH:mm:ss")+"] 正在连接!"+ZookeeperUtil.zoo.getState());
                         break;
@@ -44,11 +45,11 @@ public class ZookeeperConnectSessionWatcherUtil implements Runnable {
                             ZookeeperUtil.zkCreate("once create this node.".getBytes());
                         }
                         break;
-                }*/
+                }
                 Thread.sleep(30000);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
+        }*/
     }
 }

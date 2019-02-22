@@ -159,7 +159,7 @@ function createWebSocketClient(sessionId,userId){
         window.WebSocket = window.MozWebSocket;
     }
     if (window.WebSocket) {
-        socket = new WebSocket("ws://"+webSocketChatAddress+":25214?webSocketLogin="+webSocketLogin);
+        socket = new WebSocket("ws://"+webSocketChatAddress+":7379?webSocketLogin="+webSocketLogin);
 
         socket.onmessage = function(event) {
             var dataJson = JSON.parse(event.data);

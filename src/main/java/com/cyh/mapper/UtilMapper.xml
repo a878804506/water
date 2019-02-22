@@ -22,7 +22,7 @@
 	</insert>
 
 	<insert id="insertConfigureInfoLogs" parameterType="java.lang.String" >
-		insert into configureinfologs(event) values ( #{log} )
+		insert into configureinfologs(event,create_ip_port,byway) values ( #{log} ,#{ipAndPort},#{byWay})
 	</insert>
 
 	<update id="updateOldTabForZero" parameterType="java.lang.String">
