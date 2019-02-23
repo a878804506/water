@@ -93,7 +93,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
         $("#ip2").val(returnCitySN.cip);
 
         //跨域请求 获取用户上网IP和地址
-        $.ajax({
+        /*$.ajax({
             async: false,
             type: "GET",
             dataType: 'jsonp',
@@ -106,7 +106,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
             success: function(res) {
                 $("#ip1").val(res.ip);
             }
-        });
+        });*/
 
         $("#bigDiv").click(function(){
             document.querySelector("#bigDiv").style.display = "none";
@@ -165,7 +165,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		    </form>
 	    </div>
     </div>
-    <div class="loginbm">版权所有(5.0)  2018.7  </div>
+    <div class="loginbm">版权所有(6.0)  2019.2  </div>
 	<div class="link">
 		<div id="box" onmouseover="display()" onmouseout="disappear()">
 					<p class="p">1.新增天气预报功能；</p>

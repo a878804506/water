@@ -65,15 +65,16 @@ public final class GetUserIpUtil {
     private static JSONObject getAddressByIp(String IP){
         try{
             String str = getJsonContent("http://ip.taobao.com/service/getIpInfo.php?ip="+IP);
-            JSONObject obj = JSONObject.fromObject(str);
-            return obj;
+            if(StringUtils.isNotBlank(str))
+                return JSONObject.fromObject(str);
         }catch(Exception e){
-            e.printStackTrace();
-            return null;
+            return JSONObject.fromObject("{\"code\":1,\"ip\":\""+IP+"\"}");
         }
+        return JSONObject.fromObject("{\"code\":1,\"ip\":\""+IP+"\"}");
     }
 
     private static String getJsonContent(String urlStr) {
+        String jsonStr = "";
         try {// 获取HttpURLConnection连接对象
             URL url = new URL(urlStr);
             HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
@@ -84,31 +85,20 @@ public final class GetUserIpUtil {
             // 获取相应码
             int respCode = httpConn.getResponseCode();
             if (respCode == 200) {
-                return ConvertStream2Json(httpConn.getInputStream());
+                // ByteArrayOutputStream相当于内存输出流
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                byte[] buffer = new byte[1024];
+                int len;
+                // 将输入流转移到内存输出流中
+                while ((len = httpConn.getInputStream().read(buffer, 0, buffer.length)) != -1) {
+                    out.write(buffer, 0, len);
+                }
+                // 将内存流转换为字符串
+                jsonStr = new String(out.toByteArray(),"utf8");
+                return jsonStr;
             }
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return "";
-    }
-
-    private static String ConvertStream2Json(InputStream inputStream) {
-        String jsonStr = "";
-        // ByteArrayOutputStream相当于内存输出流
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1024];
-        int len;
-        // 将输入流转移到内存输出流中
-        try {
-            while ((len = inputStream.read(buffer, 0, buffer.length)) != -1) {
-                out.write(buffer, 0, len);
-            }
-            // 将内存流转换为字符串
-            jsonStr = new String(out.toByteArray(),"utf8");
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            return jsonStr;
         }
         return jsonStr;
     }

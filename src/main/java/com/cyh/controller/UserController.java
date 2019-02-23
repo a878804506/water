@@ -89,7 +89,7 @@ public class UserController {
                 loginuser.setUserCity((String) info.get("city"));
             }else{
                 //没有获取到登录用户的ip详细信息
-                loginuser.setIp("未知IP");
+                loginuser.setIp(IPInfo.get("ip").toString());
                 loginuser.setUserRegion("未知省份");
                 loginuser.setUserCity("未知城市");
             }
