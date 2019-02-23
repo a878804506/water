@@ -56,7 +56,7 @@ public class BillController {
 
     // 根据编号和月份来修改用户的止码，并读取上个月的止码作为该月的起码
     @RequestMapping("addBill") // condition 条件类
-    public ModelAndView addBill(Condition condition, HttpSession session, HttpServletRequest request) {
+    public ModelAndView addBill(Condition condition, HttpSession session, HttpServletRequest request) throws MyException {
         // 先改bill 止码
         Bill bill = null;
         //查询用户信息是因为此表中有用户的单价
@@ -378,6 +378,15 @@ public class BillController {
         mv.setViewName("jsp/bill.jsp");
         session.setAttribute("middle", mi);
         session.setAttribute("mm", mi.getMonth());
+
+        // 取出excel的存储路径
+        ConfigureInfo excelSettings = utilService.getConfigureInfoByName("excel");
+        if (StringUtils.isEmpty(excelSettings.getPath())) {
+            throw new MyException("请先设置文件在服务器的生成路径！");
+        }else{
+            String fullMonth = String.format("%02d", mi.getMonth()); // 01,02,03,04,10,11,12 这样的月份
+            session.setAttribute("fullFilePath", excelSettings.getPath() + System.getProperty("file.separator") + mi.getYear()+fullMonth);
+        }
         return mv;
     }
 
@@ -455,30 +464,32 @@ public class BillController {
         format10.setAlignment(jxl.format.Alignment.CENTRE); // 把水平对齐方式指定为居中
         format10.setVerticalAlignment(jxl.format.VerticalAlignment.CENTRE); // 把垂直对齐方式指定为居中
         // 用户编号前面+“0”
-        String bianhao = "";
-        bianhao = String.format("%04d", mi.getUid());
+        String bianhao = String.format("%04d", mi.getUid());
         WritableWorkbook workbook = null;
-        // 取出excel的存储路径
-        ConfigureInfo excelSettings = utilService.getConfigureInfoByName("excel");
-        if (StringUtils.isEmpty(excelSettings.getPath())) {
-            throw new MyException("请先设置文件在服务器的生成路径！");
+
+        // 判断文件夹是否存在
+        String fullFilePath = request.getSession().getAttribute("fullFilePath").toString();
+        File filePath = new File(fullFilePath);
+        if (!filePath .exists()  && !filePath .isDirectory()) {
+            System.out.println("文件夹不存在");
+            filePath .mkdir();
         }
         String fileName = "";
         File file = null;
         // 判断用户是要单月开票还是连月（1-2月）开票
         if (request.getParameter("password").equals("1")) {
             fileName = bianhao + "-" + mi.getUname() + "的" + mi.getYear() + "年" + mi.getMonth() + "月收据.xls";
-            file = new File(excelSettings.getPath() + System.getProperty("file.separator") + fileName);
         }
         if (request.getParameter("password").equals("2")) {
             fileName = bianhao + "-" + mi.getUname() + "的" + mi.getYear() + "年1-2月份收据.xls";
-            file = new File(excelSettings.getPath() + System.getProperty("file.separator") + fileName);
         }
+        file = new File(fullFilePath + System.getProperty("file.separator") + fileName);
         // 若文件不存在
         if (!file.exists()) {
             file.getParentFile().mkdirs();
             try {
                 // 创建文件
+                System.out.println("文件不存在");
                 file.createNewFile();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -695,7 +706,7 @@ public class BillController {
         String fileName = excel(mi, mi.getDaxie(), request);
         if (StringUtils.isNotEmpty(fileName)) {
             try {
-                DownloadExcelUtil.fileDownload(response, fileName, utilService.getConfigureInfoByName("excel").getPath());
+                DownloadExcelUtil.fileDownload(response, fileName, request.getSession().getAttribute("fullFilePath").toString());
             } catch (MyException e) {
                 e.printStackTrace();
             }
