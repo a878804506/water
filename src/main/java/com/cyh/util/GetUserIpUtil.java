@@ -1,15 +1,12 @@
 package com.cyh.util;
 
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
 
 public final class GetUserIpUtil {
 
@@ -66,11 +63,11 @@ public final class GetUserIpUtil {
         try{
             String str = getJsonContent("http://ip.taobao.com/service/getIpInfo.php?ip="+IP);
             if(StringUtils.isNotBlank(str))
-                return JSONObject.fromObject(str);
+                return JSONObject.parseObject(str);
         }catch(Exception e){
-            return JSONObject.fromObject("{\"code\":1,\"ip\":\""+IP+"\"}");
+            return JSONObject.parseObject("{\"code\":1,\"ip\":\""+IP+"\"}");
         }
-        return JSONObject.fromObject("{\"code\":1,\"ip\":\""+IP+"\"}");
+        return JSONObject.parseObject("{\"code\":1,\"ip\":\""+IP+"\"}");
     }
 
     private static String getJsonContent(String urlStr) {

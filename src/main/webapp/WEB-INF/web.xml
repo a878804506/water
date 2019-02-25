@@ -40,6 +40,12 @@
 		<listener-class>com.cyh.util.SessionListenerUtil</listener-class>
 	</listener>
 
+	<!-- 配置log4j配置文件路径 -->
+	<context-param>
+		<param-name>log4jConfigLocation</param-name>
+		<param-value>/WEB-INF/log4j.properties</param-value>
+	</context-param>
+
 	<!-- 欢迎页-->
 	<welcome-file-list>
 		<welcome-file>/WEB-INF/jsp/login.jsp</welcome-file>
