@@ -366,6 +366,9 @@ public class UserController {
     public String createManageUser(User user){
         try{
             user.setTime(DateFormatUtils.format(new Date(),"yyyy-MM-dd HH:mm:ss"));
+            user.setNickName(user.getName());
+            user.setImg("default_picture.png");
+            user.setGrayImg("default_picture.png");
             user.setIp("XX");
             user.setUserRegion("XX");
             user.setUserCity("XX");

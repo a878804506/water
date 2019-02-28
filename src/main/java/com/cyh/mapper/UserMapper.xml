@@ -25,7 +25,7 @@
   			</update>
 
 			<insert id="createUser" parameterType="com.cyh.pojo.User" >
-					insert into user(name,password,struts,time,ip,region,city) values (#{name},#{password},#{struts},#{time},#{ip},#{userRegion},#{userCity});
+					insert into user(name,nickName,password,img,grayImg,struts,time,ip,region,city) values (#{name},#{nickName},#{password},#{img},#{grayImg},#{struts},#{time},#{ip},#{userRegion},#{userCity});
 			</insert>
 
 			<!--获取所有可登陆用户列表  struts=1-->
