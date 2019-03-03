@@ -63,4 +63,8 @@
     <update id="updateRole" parameterType="com.cyh.pojo.Role">
 			update role set role_name = #{role_name},is_admin = #{is_admin},remark = #{remark},update_time = #{update_time}  where id=#{id}
 	</update>
+
+    <update id="updateRoleStatus" parameterType="com.cyh.pojo.Role">
+			update role set status = #{status},update_time = #{update_time}  where id=#{id}
+	</update>
 </mapper>

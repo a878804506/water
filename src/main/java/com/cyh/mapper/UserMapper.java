@@ -41,4 +41,6 @@ public interface UserMapper {
     //修改角色
     int updateRole(Role role);
 
+    //修改角色状态
+    int updateRoleStatus(Role role);
 }

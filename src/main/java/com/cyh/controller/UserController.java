@@ -561,7 +561,7 @@ public class UserController {
         }
     }
 
-    //修改系统角色
+    //修改系统角色的信息
     @ResponseBody
     @RequestMapping(value = "updateRole" , method = RequestMethod.POST, produces = "text/html;charset=utf-8")
     public String updateRole(Role role){
@@ -571,6 +571,20 @@ public class UserController {
                 role.setRemark("暂无备注");
             userService.updateRole(role);
             return "角色信息修改成功！";
+        }catch (Exception e){
+            e.printStackTrace();
+            return "服务器内部错误！";
+        }
+    }
+
+    //修改系统角色的状态
+    @ResponseBody
+    @RequestMapping(value = "updateRoleStatus" , method = RequestMethod.POST, produces = "text/html;charset=utf-8")
+    public String updateRoleStatus(Role role){
+        try{
+            role.setUpdate_time(DateFormatUtils.format(new Date(),"yyyy-MM-dd HH:mm:ss"));
+            userService.updateRoleStatus(role);
+            return "角色状态修改成功！";
         }catch (Exception e){
             e.printStackTrace();
             return "服务器内部错误！";

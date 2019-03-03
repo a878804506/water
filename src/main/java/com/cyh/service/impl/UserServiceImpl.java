@@ -71,4 +71,9 @@ public class UserServiceImpl implements UserService {
     public int updateRole(Role role) {
         return userMapper.updateRole(role);
     }
+
+    @Override
+    public int updateRoleStatus(Role role) {
+        return userMapper.updateRoleStatus(role);
+    }
 }

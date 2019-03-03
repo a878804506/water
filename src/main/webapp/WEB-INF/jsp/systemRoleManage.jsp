@@ -68,7 +68,7 @@
                 rname = $(this).children('td').eq(2).text();
                 rtype = $(this).children('td').eq(3).text();
                 rremark = $(this).children('td').eq(4).text();
-                rstatus = $(this).children('td').eq(1).text();
+                rstatus = $(this).children('td').eq(1).val();
             });
 
             //新建角色
@@ -274,17 +274,24 @@
                         msg = "启用";
                     }
                     bootbox.dialog({
-                        message: "确定" + msg + "该用户吗?",
+                        message: "确定" + msg + "该角色吗?",
                         title: "提示",
                         buttons: {
                             确定: {
                                 label: "确定",
                                 className: "btn-success",
                                 callback: function () {
+                                    var role = {};
+                                    role["id"] = rid;
+                                    if (selectStruts == "1") {
+                                        role["status"] = 0;
+                                    } else {
+                                        role["status"] = 1;
+                                    }
                                     $.ajax({
-                                        url: "updateUserStrutsByUid.action",
+                                        url: "updateRoleStatus.action",
                                         type: "POST",
-                                        data: {uid: uid },
+                                        data: role,
                                         dataType: "text",
                                         async:false,
                                         success: function (data) {
@@ -297,7 +304,7 @@
                                                 },
                                                 message: data,
                                                 callback: function () {
-                                                    window.location.href = "getAllUsers.action";
+                                                    window.location.href = "getAllRoles.action";
                                                 }
                                                 //,title: "bootbox alert也可以添加标题哦",
                                             });
