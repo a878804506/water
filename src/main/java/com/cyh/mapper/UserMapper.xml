@@ -59,4 +59,8 @@
 	<insert id="createRole" parameterType="com.cyh.pojo.Role" >
 			insert into role(role_name,is_admin,remark,status,update_time) values (#{role_name},#{is_admin},#{remark},#{status},#{update_time});
 	</insert>
+
+    <update id="updateRole" parameterType="com.cyh.pojo.Role">
+			update role set role_name = #{role_name},is_admin = #{is_admin},remark = #{remark},update_time = #{update_time}  where id=#{id}
+	</update>
 </mapper>

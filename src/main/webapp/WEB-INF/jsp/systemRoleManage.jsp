@@ -55,6 +55,9 @@
             $("#tRoles").html(tRole);
             var rid = "";
             var rname = "";
+            var rtype = "";
+            var rremark = "";
+            var rstatus = "";
             //点击角色列表时
             $("#tRoles tr").click(function () {
                 $("#tRoles tr").removeAttr("style"); //移除所有
@@ -63,6 +66,9 @@
                 $(this).children('td').eq(1).find("input").prop("checked","checked");//为当前行的radio添加checked
                 rid = $(this).children('td').eq(0).text();
                 rname = $(this).children('td').eq(2).text();
+                rtype = $(this).children('td').eq(3).text();
+                rremark = $(this).children('td').eq(4).text();
+                rstatus = $(this).children('td').eq(1).text();
             });
 
             //新建角色
@@ -164,31 +170,63 @@
                 var selectStruts = $("[type=radio]:checked").val(); //选中的那一行
                 if (selectStruts != undefined && rid != "" && rname != "") {
                     bootbox.dialog({
-                        title : "请为 "+rname+" 重置密码",
-                        message : "<div class='well ' style='margin-top:25px;'>" +
-                                      "<form class='form-horizontal' role='form'>" +
-                                           "<div class='form-group'>" +
-                                               "<label class='col-sm-4 control-label no-padding-right' for='txtNewPwd2'>请输入重置后的新密码:</label>" +
-                                                "<div class='col-sm-8'>" +
-                                                    "<input type='text' id='newPwd' placeholder='请输入重置后的新密码' class='form-control' />" +
-                                                "</div>" +
-                                          "</div>" +
-                                      "</form>" +
-                                   "</div>",
+                        title : "修改 "+rname+" 角色的相关信息",
+                        message : "<div class='well ' style='margin-top:25px;'>"+
+                                    "<form class='form-horizontal' role='form'>"+
+                                        "<div class='form-group'>"+
+                                            "<label class='col-sm-3 control-label no-padding-right' for='txtOldPwd'>角色名称</label>"+
+                                            "<div class='col-sm-9'>"+
+                                            "<input type='text' id='role_name' name='role_name' placeholder='请输入角色名称' class='form-control' value='"+rname+"' />"+
+                                            "</div>"+
+                                        "</div>"+
+                                        "<div class='space-4'>"+
+                                        "</div>"+
+                                        "<div class='form-group'>"+
+                                            "<label class='col-sm-3 control-label no-padding-right' for='txtNewPwd1'>角色类型</label>"+
+                                            "<div class='col-sm-9'>" +
+                                                "<select  name='is_admin' id='is_admin'  class='form-control'>"+
+                                                    "<option value=''>------请选择------</option>"+
+                                                    "<option value='2'>普通用户</option>"+
+                                                    "<option value='1'>管理员</option>"+
+                                                    "<option value='0'>超级管理员</option>"+
+                                                "</select>"+
+                                            "</div>"+
+                                        "</div>"+
+                                        "<div class='space-4'>"+
+                                        "</div>"+
+                                        "<div class='form-group'>"+
+                                            "<label class='col-sm-3 control-label no-padding-right' for='txtNewPwd2'>备注</label>"+
+                                            "<div class='col-sm-9'>" +
+                                                "<input type='text' id='remark' placeholder='备注' class='form-control' value='"+rremark+"' />"+
+                                            "</div>"+
+                                        "</div>"+
+                                        "</form>"+
+                                    "</div>",
                         buttons : {
                             "success" : {
                                 "label" : "<i class='icon-ok'></i> 保存",
                                 "className" : "btn-sm btn-success",
                                 "callback" : function() {
-                                    var newPwd = $("#newPwd").val();
-                                    if(newPwd == ""){
-                                        bootbox.alert("密码不能为空");
+                                    var role_name = $("#role_name").val();
+                                    var is_admin = $("#is_admin").val();
+                                    if(role_name == ""){
+                                        bootbox.alert("角色名称不能为空！");
                                         return false;
                                     }
+                                    if(is_admin == ""){
+                                        bootbox.alert("请选择角色类型！");
+                                        return false;
+                                    }
+                                    var role = {};
+                                    role["id"] = rid;
+                                    role["role_name"] = role_name;
+                                    role["is_admin"] = is_admin;
+                                    role["remark"] = $("#remark").val();
+
                                     $.ajax({
-                                        url: "resettingPasswordForUserByUserId.action",
+                                        url: "updateRole.action",
                                         type: "POST",
-                                        data: {uid: uid,newPwd:newPwd},
+                                        data: role,
                                         dataType: "text",
                                         async:false, //使用同步
                                         success: function (data) {
@@ -201,7 +239,7 @@
                                                 },
                                                 message: data,
                                                 callback: function () {
-                                                    window.location.href = "getAllUsers.action";
+                                                    window.location.href = "getAllRoles.action";
                                                 }
                                             });
                                         }
@@ -216,7 +254,7 @@
                         }
                     });
                 } else {
-                    bootbox.alert("请选择用户再进行操作！");
+                    bootbox.alert("请选择角色再进行操作！");
                     return;
                 }
             })
@@ -276,7 +314,7 @@
                         }
                     });
                 } else {
-                    bootbox.alert("请选择用户再进行操作！");
+                    bootbox.alert("请选择角色再进行操作！");
                     return;
                 }
             })

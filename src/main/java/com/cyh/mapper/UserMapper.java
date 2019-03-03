@@ -37,4 +37,8 @@ public interface UserMapper {
 
     //新建角色
     int createRole(Role role);
+
+    //修改角色
+    int updateRole(Role role);
+
 }

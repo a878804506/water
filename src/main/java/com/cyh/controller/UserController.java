@@ -560,4 +560,20 @@ public class UserController {
             return "服务器内部错误！";
         }
     }
+
+    //修改系统角色
+    @ResponseBody
+    @RequestMapping(value = "updateRole" , method = RequestMethod.POST, produces = "text/html;charset=utf-8")
+    public String updateRole(Role role){
+        try{
+            role.setUpdate_time(DateFormatUtils.format(new Date(),"yyyy-MM-dd HH:mm:ss"));
+            if(StringUtils.isBlank(role.getRemark()))
+                role.setRemark("暂无备注");
+            userService.updateRole(role);
+            return "角色信息修改成功！";
+        }catch (Exception e){
+            e.printStackTrace();
+            return "服务器内部错误！";
+        }
+    }
 }
