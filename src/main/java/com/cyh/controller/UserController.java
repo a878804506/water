@@ -15,6 +15,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.cyh.common.Constants;
 import com.cyh.exception.MyException;
 import com.cyh.pojo.MenuPermission;
+import com.cyh.pojo.Role;
 import com.cyh.service.MenuPermissionService;
 import com.cyh.util.*;
 import com.google.gson.Gson;
@@ -310,7 +311,6 @@ public class UserController {
         return mv;
     }
 
-
     //禁用、启用系统用户
     @ResponseBody
     @RequestMapping(value = "updateUserStrutsByUid" , method = RequestMethod.POST, produces = "text/html;charset=utf-8")
@@ -526,6 +526,38 @@ public class UserController {
         // 有头像修改 或者 昵称修改时  修改信息也要同步到redis
         if(StringUtils.isNotEmpty(user.getImg()) || StringUtils.isNotEmpty(user.getNickName())){
             jedis.set(RedisDB.systemUsers.getBytes(), SerializeUtil.serialize(allStrutsUsers));
+        }
+    }
+
+    /**
+     *  角色相关 开始
+     */
+    //系统角色管理
+    @RequestMapping("getAllRoles")
+    public ModelAndView getAllRoles(){
+        //所有角色列表
+        List<Role> roleList = userService.getAllRoles();
+        ModelAndView mv = new ModelAndView();
+        Gson gson = new Gson();
+        mv.addObject("roles", gson.toJson(roleList));
+        mv.setViewName("jsp/systemRoleManage.jsp");
+        return mv;
+    }
+
+    //添加系统角色
+    @ResponseBody
+    @RequestMapping(value = "createRole" , method = RequestMethod.POST, produces = "text/html;charset=utf-8")
+    public String createRole(Role role){
+        try{
+            role.setUpdate_time(DateFormatUtils.format(new Date(),"yyyy-MM-dd HH:mm:ss"));
+            role.setStatus(1);
+            if(StringUtils.isBlank(role.getRemark()))
+                role.setRemark("暂无备注");
+            userService.createRole(role);
+            return "角色创建成功！";
+        }catch (Exception e){
+            e.printStackTrace();
+            return "服务器内部错误！";
         }
     }
 }

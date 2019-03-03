@@ -1,5 +1,6 @@
 package com.cyh.service.impl;
 
+import com.cyh.pojo.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cyh.mapper.UserMapper;
@@ -54,5 +55,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateUserInfoByUserId(User user) {
         userMapper.updateUserInfoByUserId(user);
+    }
+
+    @Override
+    public List<Role> getAllRoles() {
+        return userMapper.getAllRoles();
+    }
+
+    @Override
+    public int createRole(Role role) {
+        return userMapper.createRole(role);
     }
 }

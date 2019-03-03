@@ -1,5 +1,6 @@
 package com.cyh.service;
 
+import com.cyh.pojo.Role;
 import com.cyh.pojo.User;
 import org.apache.ibatis.annotations.Param;
 
@@ -30,4 +31,10 @@ public interface UserService {
 
     //用户修改自己的信息
     void updateUserInfoByUserId(User user);
+
+    //所有角色列表
+    List<Role> getAllRoles();
+
+    //新建角色
+    int createRole(Role role);
 }
