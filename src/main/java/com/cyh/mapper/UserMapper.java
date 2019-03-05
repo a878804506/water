@@ -43,4 +43,13 @@ public interface UserMapper {
 
     //修改角色状态
     int updateRoleStatus(Role role);
+
+    //根据用户id获取角色集合
+    List<Integer> getRolesByUserId(@Param(value="userId")int userId);
+
+    //根据用户id删除用户角色的所有映射
+    int deleteUserAndRolesMappingsByUserId(@Param(value="userId")int userId);
+
+    //增加用户角色的映射
+    int insertUserAndRolesMappings(@Param(value="userId")int userId,@Param(value="roleIds")int []roleIds);
 }

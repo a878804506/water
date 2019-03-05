@@ -1,70 +1,87 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.cyh.mapper.UserMapper" >
+
 	<select id="CUser" parameterType="com.cyh.pojo.User" resultType="com.cyh.pojo.User">
-			select * from user where name=#{name} and password=#{password}
+		select * from user where name=#{name} and password=#{password}
 	</select>
+
 	<update id="updateUser"  parameterType="com.cyh.pojo.User">
-			update user set time=#{time},ip=#{ip},city=#{userCity},region=#{userRegion}  where id=#{id}
+		update user set time=#{time},ip=#{ip},city=#{userCity},region=#{userRegion}  where id=#{id}
 	</update>
 
 	<select id="getAllUsers" resultType="com.cyh.pojo.User">
-			select t.id,t.nickName,t.name,t.time,t.ip,t.region userRegion,t.city userCity,t.struts from user t
+		select t.id,t.nickName,t.name,t.time,t.ip,t.region userRegion,t.city userCity,t.struts from user t
 	</select>
 
 	<update id="updateUserStrutsByUid"  parameterType="java.lang.Integer">
-			update user set struts=#{struts}  where id=#{uid}
+		update user set struts=#{struts}  where id=#{uid}
 	</update>
 
 	<select id="getUserById" parameterType="java.lang.Integer" resultType="com.cyh.pojo.User">
-			select * from user t where t.id = #{uid}
+		select * from user t where t.id = #{uid}
 	</select>
 
 	<update id="updateUserPwdByUid" >
-			update user set password=#{1}  where id=#{0}
+		update user set password=#{1}  where id=#{0}
 	</update>
 
 	<insert id="createUser" parameterType="com.cyh.pojo.User" >
-			insert into user(name,nickName,password,img,grayImg,struts,time,ip,region,city) values (#{name},#{nickName},#{password},#{img},#{grayImg},#{struts},#{time},#{ip},#{userRegion},#{userCity});
+		insert into user(name,nickName,password,img,grayImg,struts,time,ip,region,city) values (#{name},#{nickName},#{password},#{img},#{grayImg},#{struts},#{time},#{ip},#{userRegion},#{userCity});
 	</insert>
 
 	<!--获取所有可登陆用户列表  struts=1-->
 	<select id="getAllStrutsUsers" resultType="Map">
-			select t.id,t.name,t.nickName,t.img,t.grayImg,t.time,t.ip,t.region,t.city,t.struts,'false' as 'isOnline' from user t where t.struts = 1
+		select t.id,t.name,t.nickName,t.img,t.grayImg,t.time,t.ip,t.region,t.city,t.struts,'false' as 'isOnline' from user t where t.struts = 1
 	</select>
 
 	<update id="updateUserInfoByUserId"  parameterType="com.cyh.pojo.User" >
-			update user
-			<trim prefix="set" suffixOverrides=",">
-				<if test="password != null and password != ''">
-					 password = #{password},
-				</if>
-				<if test="nickName != null and nickName != ''">
-					 nickName = #{nickName},
-				</if>
-				<if test="img != null and img != ''">
-					 img = #{img},
-				</if>
-				<if test="grayImg != null and grayImg != ''">
-					grayImg = #{grayImg},
-				</if>
-			</trim>
-			where id= ${id}
+		update user
+		<trim prefix="set" suffixOverrides=",">
+			<if test="password != null and password != ''">
+				 password = #{password},
+			</if>
+			<if test="nickName != null and nickName != ''">
+				 nickName = #{nickName},
+			</if>
+			<if test="img != null and img != ''">
+				 img = #{img},
+			</if>
+			<if test="grayImg != null and grayImg != ''">
+				grayImg = #{grayImg},
+			</if>
+		</trim>
+		where id= ${id}
 	</update>
 
 	<select id="getAllRoles" resultType="com.cyh.pojo.Role">
-			select t.id,t.role_name,t.is_admin,t.remark,t.`status`,t.update_time from `role` t
+	    select t.id,t.role_name,t.is_admin,t.remark,t.`status`,t.update_time from `role` t
 	</select>
 
 	<insert id="createRole" parameterType="com.cyh.pojo.Role" >
-			insert into role(role_name,is_admin,remark,status,update_time) values (#{role_name},#{is_admin},#{remark},#{status},#{update_time});
+		insert into role(role_name,is_admin,remark,status,update_time) values (#{role_name},#{is_admin},#{remark},#{status},#{update_time});
 	</insert>
 
     <update id="updateRole" parameterType="com.cyh.pojo.Role">
-			update role set role_name = #{role_name},is_admin = #{is_admin},remark = #{remark},update_time = #{update_time}  where id=#{id}
+		update role set role_name = #{role_name},is_admin = #{is_admin},remark = #{remark},update_time = #{update_time}  where id=#{id}
 	</update>
 
     <update id="updateRoleStatus" parameterType="com.cyh.pojo.Role">
-			update role set status = #{status},update_time = #{update_time}  where id=#{id}
+		update role set status = #{status},update_time = #{update_time}  where id=#{id}
 	</update>
+
+	<select id="getRolesByUserId" resultType="java.lang.Integer">
+	    select roleid from user_role where userid = ${userId}
+	</select>
+
+	<delete id="deleteUserAndRolesMappingsByUserId" parameterType="java.lang.Integer">
+		delete from user_role where userid = #{userId}
+	</delete>
+
+	<insert id="insertUserAndRolesMappings">
+		insert into user_role(userid,roleid) values
+		<foreach collection="roleIds" item="rid"   separator="," close=";">
+			(#{userId},#{rid})
+		</foreach>
+	</insert>
 </mapper>

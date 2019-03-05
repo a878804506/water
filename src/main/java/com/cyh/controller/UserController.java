@@ -232,67 +232,6 @@ public class UserController {
         return "redirect:login";
     }
 
-    //菜单权限管理    查询出所有的菜单
-    @RequestMapping("menuTreeConfigureForUser")
-    public ModelAndView getMenuTreeAndAllUsersByUserId(HttpServletRequest request){
-        //所有菜单列表，包括permission
-        List<MenuPermission> menuListtemp = MenuPermissionUtil.getMenuTree(menuPermissionService.getAllMenu());
-        //所有用户列表
-        List<User> userList = userService.getAllUsers();
-        Gson gson = new Gson();
-        ModelAndView mv = new ModelAndView();
-        mv.addObject("users", gson.toJson(userList));
-        mv.addObject("menus", gson.toJson(menuListtemp));
-        mv.setViewName("jsp/menuTreeConfigure.jsp");
-        return mv;
-    }
-
-    /**
-     * 查询用户所拥有的权限并在页面上生成对应的tree
-     * @param uid
-     * @return
-     */
-    @ResponseBody
-    @RequestMapping("getUserMenuPermissionByUserId")
-    public List<Integer> getUserMenuPermissionByUserId(int uid){
-        return menuPermissionService.getUserMenuPermissionByUserId(uid);
-    }
-
-    /**
-     * 修改用户拥有的权限
-     * @param uid
-     * @param permissionsId
-     * @return
-     */
-    @ResponseBody
-    @RequestMapping(value = "insertUserMenuPermissionByUserId", method = RequestMethod.POST, produces = "text/html;charset=utf-8")
-    public String insertUserMenuPermissionByUserId(int uid,int[] permissionsId){
-        try{
-            //先删除
-            menuPermissionService.deleteUserMenuPermissionByUserId(uid);
-            if(permissionsId != null){
-                //后添加
-                StringBuffer sb = new StringBuffer();
-                for (int i =0 ; i < permissionsId.length ; i++){
-                    sb.append("(");
-                    sb.append(uid);
-                    sb.append(",");
-                    sb.append(permissionsId[i]);
-                    sb.append(")");
-                    if(i < permissionsId.length-1){
-                        sb.append(",");
-                    }
-                }
-                menuPermissionService.insertUserMenuPermissionByUserId(sb.toString());
-            }
-            return "操作成功！";
-        }catch (Exception e){
-            e.printStackTrace();
-            return "操作失败！";
-        }
-
-    }
-
     //菜单权限配置
     @RequestMapping("menuTreeConfigure")
     public ModelAndView menuTreeConfigure(HttpServletRequest request) throws MyException {
@@ -530,7 +469,7 @@ public class UserController {
     }
 
     /**
-     *  角色相关 开始
+     *  角色界面 开始
      */
     //系统角色管理
     @RequestMapping("getAllRoles")
@@ -588,6 +527,114 @@ public class UserController {
         }catch (Exception e){
             e.printStackTrace();
             return "服务器内部错误！";
+        }
+    }
+
+    /**
+     *  用户与角色关联关系界面 开始
+     */
+    //用户与角色的列表查询
+    @RequestMapping("getAllUsersAndAllRoles")
+    public ModelAndView getAllUsersAndAllRoles(){
+        ModelAndView mv = new ModelAndView();
+        Gson gson = new Gson();
+        //所有用户列表
+        List<User> userList = userService.getAllUsers();
+        System.out.println(userList);
+        mv.addObject("users", userList);
+        //所有角色列表
+        List<Role> roleList = userService.getAllRoles();
+        mv.addObject("roles", roleList);
+        mv.setViewName("jsp/systemUserAndRoleMapping.jsp");
+        return mv;
+    }
+
+    //根据用户id获取角色集合
+    @ResponseBody
+    @RequestMapping("getRolesByUserId")
+    public List<Integer> getRolesByUserId(int userId){
+        List<Integer> roles = userService.getRolesByUserId(userId);
+        if(roles == null || roles.size() == 0)
+            roles = new ArrayList<>();
+        return roles;
+    }
+
+    //保存用户与角色的关联关系
+    @ResponseBody
+    @RequestMapping(value = "saveUserAndRolesMapping" , method = RequestMethod.POST, produces = "text/html;charset=utf-8")
+    public String saveUserAndRolesMapping(int userId,int []roleIds){
+        try {
+            userService.deleteUserAndRolesMappingsByUserId(userId);
+            if(null != roleIds || roleIds.length !=0 ){
+                userService.insertUserAndRolesMappings(userId,roleIds);
+            }
+            return "操作成功！";
+        }catch (Exception e){
+            e.printStackTrace();
+            return "服务器内部错误！";
+        }
+    }
+
+    /**
+     *  角色与菜单关联关系 开始
+     */
+    //菜单权限管理    查询出所有的菜单
+    @RequestMapping("menuTreeConfigureForUser")
+    public ModelAndView getMenuTreeAndAllUsersByUserId(HttpServletRequest request){
+        //所有菜单列表，包括permission
+        List<MenuPermission> menuListtemp = MenuPermissionUtil.getMenuTree(menuPermissionService.getAllMenu());
+        //所有用户列表
+        List<User> userList = userService.getAllUsers();
+        Gson gson = new Gson();
+        ModelAndView mv = new ModelAndView();
+        mv.addObject("users", gson.toJson(userList));
+        mv.addObject("menus", gson.toJson(menuListtemp));
+        mv.setViewName("jsp/menuTreeConfigure.jsp");
+        return mv;
+    }
+
+    /**
+     * 查询用户所拥有的权限并在页面上生成对应的tree
+     * @param uid
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("getUserMenuPermissionByUserId")
+    public List<Integer> getUserMenuPermissionByUserId(int uid){
+        return menuPermissionService.getUserMenuPermissionByUserId(uid);
+    }
+
+    /**
+     * 修改用户拥有的权限
+     * @param uid
+     * @param permissionsId
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "insertUserMenuPermissionByUserId", method = RequestMethod.POST, produces = "text/html;charset=utf-8")
+    public String insertUserMenuPermissionByUserId(int uid,int[] permissionsId){
+        try{
+            //先删除
+            menuPermissionService.deleteUserMenuPermissionByUserId(uid);
+            if(permissionsId != null){
+                //后添加
+                StringBuffer sb = new StringBuffer();
+                for (int i =0 ; i < permissionsId.length ; i++){
+                    sb.append("(");
+                    sb.append(uid);
+                    sb.append(",");
+                    sb.append(permissionsId[i]);
+                    sb.append(")");
+                    if(i < permissionsId.length-1){
+                        sb.append(",");
+                    }
+                }
+                menuPermissionService.insertUserMenuPermissionByUserId(sb.toString());
+            }
+            return "操作成功！";
+        }catch (Exception e){
+            e.printStackTrace();
+            return "操作失败！";
         }
     }
 }

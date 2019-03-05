@@ -36,7 +36,7 @@
             }else if(role.is_admin == 1){
                 tRole += "管理员";
             }else if(role.is_admin == 2){
-                tRole += "普通用户";
+                tRole += "普通角色";
             }
             tRole += "</td> <td>" +
                 role.remark +
@@ -94,7 +94,7 @@
                                           "<div class='col-sm-9'>" +
                                           "<select  name='is_admin' id='is_admin'  class='form-control'>"+
                                               "<option value=''>------请选择------</option>"+
-                                              "<option value='2'>普通用户</option>"+
+                                              "<option value='2'>普通角色</option>"+
                                               "<option value='1'>管理员</option>"+
                                               "<option value='0'>超级管理员</option>"+
                                           "</select>"+
@@ -186,7 +186,7 @@
                                             "<div class='col-sm-9'>" +
                                                 "<select  name='is_admin' id='is_admin'  class='form-control'>"+
                                                     "<option value=''>------请选择------</option>"+
-                                                    "<option value='2'>普通用户</option>"+
+                                                    "<option value='2'>普通角色</option>"+
                                                     "<option value='1'>管理员</option>"+
                                                     "<option value='0'>超级管理员</option>"+
                                                 "</select>"+

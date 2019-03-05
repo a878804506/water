@@ -43,4 +43,13 @@ public interface UserService {
 
     //修改角色状态
     int updateRoleStatus(Role role);
+
+    //根据用户id获取角色集合
+    List<Integer> getRolesByUserId(int userId);
+
+    //根据用户id删除用户角色的所有映射
+    int deleteUserAndRolesMappingsByUserId(int userId);
+
+    //增加用户角色的映射
+    int insertUserAndRolesMappings(int userId,int []roleIds);
 }

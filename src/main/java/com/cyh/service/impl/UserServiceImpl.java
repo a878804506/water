@@ -76,4 +76,19 @@ public class UserServiceImpl implements UserService {
     public int updateRoleStatus(Role role) {
         return userMapper.updateRoleStatus(role);
     }
+
+    @Override
+    public List<Integer> getRolesByUserId(int userId) {
+        return userMapper.getRolesByUserId(userId);
+    }
+
+    @Override
+    public int deleteUserAndRolesMappingsByUserId(int userId) {
+        return userMapper.deleteUserAndRolesMappingsByUserId(userId);
+    }
+
+    @Override
+    public int insertUserAndRolesMappings(int userId, int[] roleIds) {
+        return userMapper.insertUserAndRolesMappings(userId,roleIds);
+    }
 }
