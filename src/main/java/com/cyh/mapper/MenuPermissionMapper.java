@@ -16,12 +16,12 @@ public interface MenuPermissionMapper {
     //获取所有菜单列表
     List<MenuPermission> getAllMenu();
 
-    //获取用户权限  查询usertomenupermissionmapping 表
-    List<Integer> getUserMenuPermissionByUserId(int uid);
+    //获取用户权限
+    List<Integer> getMenuPermissionByRoleId(int rid);
 
-    //删除用户菜单权限
-    int deleteUserMenuPermissionByUserId(int uid);
+    //删除角色菜单权限
+    int deleteMenuPermissionByRoleId(int rid);
 
-    //添加用户菜单权限
-    int insertUserMenuPermissionByUserId(@Param(value="condition")String condition);
+    //为角色添加菜单权限
+    int insertMenuPermissionByRoleId(@Param(value="rid")int rid,@Param(value="permissionsId")int[] permissionsId);
 }

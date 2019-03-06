@@ -9,18 +9,34 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>用户菜单配置</title>
+    <title>角色菜单配置</title>
 
     <jsp:include page="js.jsp" flush="true"/>
     <link href="<%=path %>/css/bootstrapStyle.css" rel="stylesheet" >
 
     <style type="text/css">
-        span{display: inline}
+        span{
+            display: inline
+        }
+        .imgtable th{
+            height:34px;
+            line-height:34px;
+            text-indent:0px;
+            text-align:center;
+            font-size:16px;
+        }
+        .imgtable td{
+            line-height:30px;
+            text-indent:10px;
+            font-size:13px;
+        }
+        tr .center{
+            text-align:center;
+        }
     </style>
 
     <SCRIPT type="text/javascript">
         var menus = ${menus};
-        var users = ${users}
 
         var setting = {
             view: {
@@ -43,58 +59,18 @@
         //菜单
         var zNodes = getMenuTreeData(null);
 
-        //用户列表
-        var tUser = "";
-        $.each(users,function(index,user){
-            tUser += "<tr><td style='display:none;'>" +
-                    user.id+
-                    "</td><td>"+
-                    user.name+
-                    "</td> <td>";
-            if(user.nickName != null){
-                tUser += user.nickName;
-            }else{
-                tUser += "暂无记录";
-            }
-            tUser += "</td> <td>";
-            if(user.time != null){
-                tUser += user.time;
-            }else{
-                tUser += "暂无记录";
-            }
-            tUser += "</td> <td>";
-            if(user.ip != null){
-                tUser += user.ip;
-            }else{
-                tUser += "暂无记录";
-            }
-            tUser += "</td> <td>";
-            if(user.userRegion != null || user.userCity !=null){
-                tUser += user.userRegion + user.userCity;
-            }else{
-                tUser += "暂无记录";
-            }
-            tUser += "</td></tr>";
-        })
-        tUser += "<tr align='center' style='border-style:none;'>" +
-            "<td style='display:none;'>false</td><td style='border-style:none;'></td>" +
-            "<td colspan='2' style='margin-top: 10px; margin-bottom: 10px;border-style:none;'>" +
-            "<input type='button' value='保存所选用户关联的权限' id='savePermission'  class='btn btn-primary'  />" +
-            "</td><td style='border-style:none;'></td><td style='border-style:none;'></td></tr>";
-
         $(document).ready(function () {
-            $("#tUsers").html(tUser);
             $.fn.zTree.init($("#treeDemo"), setting, zNodes);
-            //点击用户列表时
-            $("#tUsers tr").click(function(){
-                var uid = $(this).children('td').eq(0).text();
-                if(uid != 'false'){
-                    $("#tUsers tr").removeAttr("style");
+            //点击角色列表时
+            $("#tRoles tr").click(function(){
+                var rid = $(this).children('td').eq(0).text();
+                if(rid != 'false'){
+                    $("#tRoles tr").removeAttr("style");
                     $(this).css("background","#D2E4EE");
                     $.ajax({
-                        url: "getUserMenuPermissionByUserId.action",
-                        type: "get",
-                        data: {uid: uid},
+                        url: "getMenuPermissionByRoleId.action",
+                        type: "post",
+                        data: {rid: rid},
                         dataType: "json",
                         success: function (data) {
                             if(data != null){
@@ -122,18 +98,18 @@
                     });
                 }
             });
-            //点击‘保存所选用户关联的权限’按钮时
+            //点击‘保存关联’按钮时
             $("#savePermission").click(function(){
-                var trs = $("#tUsers tr");
+                var trs = $("#tRoles tr");
                 var isSelect = false;
-                var uid = "";
+                var rid = "";
                 trs.each(function(){
                     if($(this)[0].style.background != ""){
                         isSelect =true;
-                        uid = $(this).children('td').eq(0).text();
+                        rid = $(this).children('td').eq(0).text();
                     }
                 })
-                if(isSelect && uid != ""){
+                if(isSelect && rid != ""){
                     var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
                     var nodes = treeObj.getCheckedNodes(true);
                     var permissionsId = [];
@@ -141,9 +117,9 @@
                         permissionsId[i] = nodes[i].id;
                     }
                     $.ajax({
-                        url: "insertUserMenuPermissionByUserId.action",
+                        url: "insertMenuPermissionByRoleId.action",
                         type: "POST",
-                        data: {uid:uid,permissionsId:permissionsId},
+                        data: {rid:rid,permissionsId:permissionsId},
                         dataType: "text",
                         traditional: true,//传数组进后台需要设置该属性
                         success: function (data) {
@@ -151,7 +127,7 @@
                         }
                     });
                 }else{
-                    bootbox.alert("请选择用户并为用户配置菜单权限！");
+                    bootbox.alert("请选择角色户并为角色配置菜单权限！");
                     return;
                 }
             })
@@ -218,7 +194,6 @@
             return zNodes;
         }
     </SCRIPT>
-
 </head>
 
 <body>
@@ -226,26 +201,49 @@
         <span>位置：</span>
         <ul class="placeul">
             <li><a href="#">首页</a></li>
-            <li><a href="#">菜单&权限管理</a></li>
-            <li><a href="#">用户&菜单&权限配置</a></li>
+            <li><a href="#">系统管理</a></li>
+            <li><a href="#">角色与菜单管理</a></li>
         </ul>
     </div>
 
     <div class="formbody">
-        <div style="width:70%;float: left;">
-            <table class="table table-bordered table-hover">
+        <div style="width:100%;margin-bottom: 8px;height:36px;">
+            <input type="button" value="保存关联" id="savePermission" class="btn btn-primary"/>
+        </div>
+        <div style="width:60%;float: left;">
+            <table class="imgtable"  border="1" cellpadding="0" cellspacing="0" align="center" >
                 <thead>
                     <tr>
                         <th style="display:none;">id</th>
-                        <th>系统账号</th>
-                        <th>用户昵称</th>
-                        <th>上次登录时间</th>
-                        <th>ip</th>
-                        <th>上次登录地</th>
+                        <th width="10%">角色名称</th>
+                        <th width="10%">角色类型</th>
+                        <th width="25%">描述</th>
+                        <th width="20%">状态</th>
                     </tr>
                 </thead>
-                <tbody id="tUsers">
-
+                <tbody id="tRoles">
+                    <c:forEach items="${roles}" var="role">
+                        <tr>
+                            <td class="center" style='display:none;'>${role.id}</td>
+                            <td class="center">${role.role_name}</td>
+                            <c:if test="${role.is_admin==0}">
+                                <td class="center">超级管理员</td>
+                            </c:if>
+                            <c:if test="${role.is_admin==1}">
+                                <td class="center">管理员</td>
+                            </c:if>
+                            <c:if test="${role.is_admin==2}">
+                                <td class="center">普通角色</td>
+                            </c:if>
+                            <td class="center">${role.remark}</td>
+                            <c:if test="${role.status==1}">
+                                <td class="center" style="color: green">有效角色</td>
+                            </c:if>
+                            <c:if test="${role.status==0}">
+                                <td class="center" style="color: red">无效角色(该角色下的权限无法使用)</td>
+                            </c:if>
+                        </tr>
+                    </c:forEach>
                 </tbody>
             </table>
         </div>

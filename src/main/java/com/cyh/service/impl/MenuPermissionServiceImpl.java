@@ -29,17 +29,17 @@ public class MenuPermissionServiceImpl implements MenuPermissionService {
     }
 
     @Override
-    public List<Integer> getUserMenuPermissionByUserId(int uid) {
-        return menuPermissionMapper.getUserMenuPermissionByUserId(uid);
+    public List<Integer> getMenuPermissionByRoleId(int rid) {
+        return menuPermissionMapper.getMenuPermissionByRoleId(rid);
     }
 
     @Override
-    public int deleteUserMenuPermissionByUserId(int uid) {
-        return menuPermissionMapper.deleteUserMenuPermissionByUserId(uid);
+    public int deleteMenuPermissionByRoleId(int rid) {
+        return menuPermissionMapper.deleteMenuPermissionByRoleId(rid);
     }
 
     @Override
-    public int insertUserMenuPermissionByUserId(String condition) {
-        return menuPermissionMapper.insertUserMenuPermissionByUserId(condition);
+    public int insertMenuPermissionByRoleId(int rid,int[] permissionsId) {
+        return menuPermissionMapper.insertMenuPermissionByRoleId(rid,permissionsId);
     }
 }

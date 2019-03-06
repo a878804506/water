@@ -579,57 +579,46 @@ public class UserController {
      *  角色与菜单关联关系 开始
      */
     //菜单权限管理    查询出所有的菜单
-    @RequestMapping("menuTreeConfigureForUser")
+    @RequestMapping("menuTreeConfigureForRole")
     public ModelAndView getMenuTreeAndAllUsersByUserId(HttpServletRequest request){
         //所有菜单列表，包括permission
         List<MenuPermission> menuListtemp = MenuPermissionUtil.getMenuTree(menuPermissionService.getAllMenu());
-        //所有用户列表
-        List<User> userList = userService.getAllUsers();
+        //角色列表
+        List<Role> roleList = userService.getAllRoles();
         Gson gson = new Gson();
         ModelAndView mv = new ModelAndView();
-        mv.addObject("users", gson.toJson(userList));
+        mv.addObject("roles", roleList);
         mv.addObject("menus", gson.toJson(menuListtemp));
         mv.setViewName("jsp/menuTreeConfigure.jsp");
         return mv;
     }
 
     /**
-     * 查询用户所拥有的权限并在页面上生成对应的tree
-     * @param uid
+     * 查询角色所拥有的权限并在页面上生成对应的tree
+     * @param rid
      * @return
      */
     @ResponseBody
-    @RequestMapping("getUserMenuPermissionByUserId")
-    public List<Integer> getUserMenuPermissionByUserId(int uid){
-        return menuPermissionService.getUserMenuPermissionByUserId(uid);
+    @RequestMapping("getMenuPermissionByRoleId")
+    public List<Integer> getMenuPermissionByRoleId(int rid){
+        return menuPermissionService.getMenuPermissionByRoleId(rid);
     }
 
     /**
      * 修改用户拥有的权限
-     * @param uid
+     * @param rid
      * @param permissionsId
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "insertUserMenuPermissionByUserId", method = RequestMethod.POST, produces = "text/html;charset=utf-8")
-    public String insertUserMenuPermissionByUserId(int uid,int[] permissionsId){
+    @RequestMapping(value = "insertMenuPermissionByRoleId", method = RequestMethod.POST, produces = "text/html;charset=utf-8")
+    public String insertUserMenuPermissionByUserId(int rid,int[] permissionsId){
         try{
             //先删除
-            menuPermissionService.deleteUserMenuPermissionByUserId(uid);
+            menuPermissionService.deleteMenuPermissionByRoleId(rid);
             if(permissionsId != null){
                 //后添加
-                StringBuffer sb = new StringBuffer();
-                for (int i =0 ; i < permissionsId.length ; i++){
-                    sb.append("(");
-                    sb.append(uid);
-                    sb.append(",");
-                    sb.append(permissionsId[i]);
-                    sb.append(")");
-                    if(i < permissionsId.length-1){
-                        sb.append(",");
-                    }
-                }
-                menuPermissionService.insertUserMenuPermissionByUserId(sb.toString());
+                menuPermissionService.insertMenuPermissionByRoleId(rid,permissionsId);
             }
             return "操作成功！";
         }catch (Exception e){

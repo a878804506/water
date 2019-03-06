@@ -66,20 +66,23 @@
 			#t2.type = 'menu'
 	</select>
 
-	<select id="getUserMenuPermissionByUserId"  resultType="java.lang.Integer">
+	<select id="getMenuPermissionByRoleId"  resultType="java.lang.Integer">
 		SELECT
-			t.menupermissionid
+			t.menuid
 		FROM
-			usertomenupermissionmapping t
+			role_menu t
 		WHERE
-			t.userid = #{uid}
+			t.roleid = #{rid}
 	</select>
 
-	<delete id="deleteUserMenuPermissionByUserId" parameterType="java.lang.Integer" >
-		delete from usertomenupermissionmapping where userid = #{uid}
+	<delete id="deleteMenuPermissionByRoleId" parameterType="java.lang.Integer" >
+		delete from role_menu where roleid = #{rid}
 	</delete>
 
-	<insert id="insertUserMenuPermissionByUserId"  parameterType="java.lang.String">
-		insert into usertomenupermissionmapping(userid,menupermissionid) values ${condition}
+	<insert id="insertMenuPermissionByRoleId"  parameterType="java.lang.String">
+		insert into role_menu(roleid,menuid) values
+		<foreach collection="permissionsId" item="pid"   separator="," close=";">
+			(#{rid},#{pid})
+		</foreach>
 	</insert>
 </mapper>

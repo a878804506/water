@@ -3,7 +3,6 @@ package com.cyh.service;
 import com.cyh.pojo.*;
 
 import java.util.List;
-import java.util.Map;
 
 public interface MenuPermissionService {
     //登录时根据用户id获取菜单
@@ -15,12 +14,12 @@ public interface MenuPermissionService {
     //获取所有菜单列表
     List<MenuPermission> getAllMenu();
 
-    //获取用户权限  查询usertomenupermissionmapping 表
-    List<Integer> getUserMenuPermissionByUserId(int uid);
+    //获取角色权限
+    List<Integer> getMenuPermissionByRoleId(int rid);
 
-    //删除用户菜单权限
-    int deleteUserMenuPermissionByUserId(int uid);
+    //删除角色菜单权限
+    int deleteMenuPermissionByRoleId(int rid);
 
-    //添加用户菜单权限
-    int insertUserMenuPermissionByUserId(String condition);
+    //为角色添加菜单权限
+    int insertMenuPermissionByRoleId(int rid,int[] permissionsId);
 }
