@@ -14,45 +14,25 @@
     <jsp:include page="js.jsp" flush="true"/>
 
     <style type="text/css">
-
+        .imgtable th{
+            height:34px;
+            line-height:34px;
+            text-indent:0px;
+            text-align:center;
+            font-size:16px;
+        }
+        .imgtable td{
+            line-height:30px;
+            text-indent:10px;
+            font-size:13px;
+        }
+        tr .center{
+            text-align:center;
+        }
     </style>
 
     <SCRIPT type="text/javascript">
-        var roles = ${roles};
-        //角色列表
-        var tRole = "";
-        $.each(roles, function (index, role) {
-            tRole += "<tr><td style='display:none;'>" +
-                role.id +
-                "</td><td >" +
-                "<input type='radio' name='choose' value = '" +
-                role.status +
-                "'/>"+
-                "</td><td>" +
-                role.role_name +
-                "</td> <td>" ;
-            if(role.is_admin == 0){
-                tRole += "超级管理员";
-            }else if(role.is_admin == 1){
-                tRole += "管理员";
-            }else if(role.is_admin == 2){
-                tRole += "普通角色";
-            }
-            tRole += "</td> <td>" +
-                role.remark +
-                "</td>" ;
-            if(role.status == 1){
-                tRole += "<td style='color:green' >已启用";
-            }else{
-                tRole += "<td style='color:red' >已禁用";
-            }
-            tRole += "</td> <td>" +
-                role.update_time +
-                "</td></tr>";
-        });
-
         $(document).ready(function () {
-            $("#tRoles").html(tRole);
             var rid = "";
             var rname = "";
             var rtype = "";
@@ -358,26 +338,49 @@
 </div>
 
 <div class="formbody">
-    <div style="width:100%;">
+    <div style="width:100%;margin-bottom: 8px;height:36px;">
         <input type="button" value="新增角色" id="insert" class="btn btn-info"/>
         <input type="button" value="修改角色" id="update" class="btn  btn-warning"/>
         <input type="button" value="禁用/启用" id="checkStatus" class="btn btn btn-danger"/>
     </div>
     <div style="width:100%;margin-top: 10px">
-        <table class="table table-bordered table-hover">
+        <table class="imgtable"  border="1" cellpadding="0" cellspacing="0" align="center" >
             <thead>
             <tr>
                 <th style="display:none;">id</th>
-                <th>选择</th>
-                <th>角色名称</th>
-                <th>角色类型</th>
-                <th>描述</th>
-                <th>状态</th>
-                <th>修改时间</th>
+                <th width="5%">选择</th>
+                <th width="8%">角色名称</th>
+                <th width="8%">角色类型</th>
+                <th width="15%">描述</th>
+                <th width="15%">状态</th>
+                <th width="8%">修改时间</th>
             </tr>
             </thead>
             <tbody id="tRoles">
-
+                <c:forEach items="${roles}" var="role">
+                    <tr>
+                        <td class="center" style='display:none;'>${role.id}</td>
+                        <td class="center"><input type='radio' name='choose' value = '${role.status}'/></td>
+                        <td class="center">${role.role_name}</td>
+                        <c:if test="${role.is_admin==0}">
+                            <td class="center">超级管理员</td>
+                        </c:if>
+                        <c:if test="${role.is_admin==1}">
+                            <td class="center">管理员</td>
+                        </c:if>
+                        <c:if test="${role.is_admin==2}">
+                            <td class="center">普通角色</td>
+                        </c:if>
+                        <td class="center">${role.remark}</td>
+                        <c:if test="${role.status==1}">
+                            <td class="center" style="color: green">有效角色</td>
+                        </c:if>
+                        <c:if test="${role.status==0}">
+                            <td class="center" style="color: red">无效角色(该角色下的权限无法使用)</td>
+                        </c:if>
+                        <td class="center">${role.update_time}</td>
+                    </tr>
+                </c:forEach>
             </tbody>
         </table>
     </div>

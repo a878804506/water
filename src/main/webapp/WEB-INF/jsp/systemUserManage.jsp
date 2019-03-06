@@ -14,57 +14,25 @@
     <jsp:include page="js.jsp" flush="true"/>
 
     <style type="text/css">
-
+        .imgtable th{
+            height:34px;
+            line-height:34px;
+            text-indent:0px;
+            text-align:center;
+            font-size:16px;
+        }
+        .imgtable td{
+            line-height:30px;
+            text-indent:10px;
+            font-size:13px;
+        }
+        tr .center{
+            text-align:center;
+        }
     </style>
 
     <SCRIPT type="text/javascript">
-        var users = ${users};
-        //用户列表
-        var tUser = "";
-        $.each(users, function (index, user) {
-            tUser += "<tr><td style='display:none;'>" +
-                user.id +
-                "</td><td >" +
-                "<input type='radio' name='choose' value = '" +
-                user.struts +
-                "'/>"+
-                "</td><td>" +
-                user.name +
-                "</td> <td>" ;
-            if(user.nickName != null){
-                tUser += user.nickName;
-            }else{
-                tUser += "暂无记录";
-            }
-            tUser += "</td> <td>";
-            if(user.time != null){
-                tUser += user.time;
-            }else{
-                tUser += "暂无记录";
-            }
-            tUser += "</td> <td>";
-            if(user.ip != null){
-                tUser += user.ip;
-            }else{
-                tUser += "暂无记录";
-            }
-            tUser += "</td> <td>";
-            if(user.userRegion != null || user.userCity !=null){
-                tUser += user.userRegion + user.userCity;
-            }else{
-                tUser += "暂无记录";
-            }
-            tUser += "</td>";
-            if (user.struts == 1) {
-                tUser += "<td style='color:green' >已启用";
-            } else {
-                tUser += "<td style='color:red'>已禁用";
-            }
-            tUser += "</td></tr>";
-        });
-
         $(document).ready(function () {
-            $("#tUsers").html(tUser);
             var uid = "";
             var uname = "";
             //点击用户列表时
@@ -324,27 +292,43 @@
 </div>
 
 <div class="formbody">
-    <div style="width:100%;">
-        <input type="button" value="新建系统用户" id="insert" class="btn btn-info"/>
-        <input type="button" value="重置用户密码" id="update" class="btn  btn-warning"/>
+    <div style="width:100%;margin-bottom: 8px;height:36px;">
+        <input type="button" value="新建用户" id="insert" class="btn btn-info"/>
+        <input type="button" value="重置密码" id="update" class="btn  btn-warning"/>
         <input type="button" value="禁用/启用" id="checkStatus" class="btn btn btn-danger"/>
     </div>
     <div style="width:100%;margin-top: 10px">
-        <table class="table table-bordered table-hover">
+        <table class="imgtable"  border="1" cellpadding="0" cellspacing="0" align="center" >
             <thead>
             <tr>
                 <th style="display:none;">id</th>
-                <th>选择</th>
-                <th>账号</th>
-                <th>用户昵称</th>
-                <th>上次登录时间</th>
-                <th>ip</th>
-                <th>上次登录地</th>
-                <th>用户状态</th>
+                <th width="3%">选择</th>
+                <th width="8%">账号</th>
+                <th width="8%">用户昵称</th>
+                <th width="8%">上次登录时间</th>
+                <th width="8%">ip</th>
+                <th width="8%">上次登录地</th>
+                <th width="8%">用户状态</th>
             </tr>
             </thead>
             <tbody id="tUsers">
-
+                <c:forEach items="${users}" var="user">
+                    <tr>
+                        <td class="center" style='display:none;'>${user.id}</td>
+                        <td class="center"><input type='radio' name='choose' value = '${user.struts}' /></td>
+                        <td class="center">${user.name}</td>
+                        <td class="center">${user.nickName}</td>
+                        <td class="center">${user.time}</td>
+                        <td class="center">${user.ip}</td>
+                        <td class="center">${user.userRegion} ${user.userCity}</td>
+                        <c:if test="${user.struts==1}">
+                            <td class="center" style="color: green">已启用</td>
+                        </c:if>
+                        <c:if test="${user.struts==0}">
+                            <td class="center" style="color: red">已冻结(该用户无法登陆系统)</td>
+                        </c:if>
+                    </tr>
+                </c:forEach>
             </tbody>
         </table>
     </div>

@@ -232,38 +232,6 @@ public class UserController {
         return "redirect:login";
     }
 
-    //系统用户管理
-    @RequestMapping("getAllUsers")
-    public ModelAndView getAllUsers(){
-        //所有用户列表
-        List<User> userList = userService.getAllUsers();
-        ModelAndView mv = new ModelAndView();
-        Gson gson = new Gson();
-        mv.addObject("users", gson.toJson(userList));
-        mv.setViewName("jsp/systemUserManage.jsp");
-        return mv;
-    }
-
-    //禁用、启用系统用户
-    @ResponseBody
-    @RequestMapping(value = "updateUserStrutsByUid" , method = RequestMethod.POST, produces = "text/html;charset=utf-8")
-    public String updateUserStrutsByUid(int uid ){
-        try{
-            User user = userService.getUserById(uid);
-            if(user.getStruts().equals("1")){
-                //修改系统用户状态
-                userService.updateUserStrutsByUid(uid,0);
-            }else{
-                //修改系统用户状态
-                userService.updateUserStrutsByUid(uid,1);
-            }
-            return "操作成功！";
-        }catch (Exception e){
-            e.printStackTrace();
-            return "操作失败！";
-        }
-    }
-
     //系统用户的权限检查(前台校验)
     @ResponseBody
     @RequestMapping("checkUserPermission")
@@ -277,42 +245,6 @@ public class UserController {
             }
         }
         return "false";
-    }
-
-    //为系统用户重置密码
-    @ResponseBody
-    @RequestMapping(value = "resettingPasswordForUserByUserId" , method = RequestMethod.POST, produces = "text/html;charset=utf-8")
-    public String resettingPasswordForUserByUserId(int uid , String newPwd){
-        try{
-            String enctyptionPwd = EncryptionAndDecryptionUtil.getEncryptionPassword(newPwd); //获取加密后的密码
-            userService.updateUserPwdByUid(uid,enctyptionPwd);  //重置系统用户密码
-            return "密码更新成功！";
-        }catch (Exception e){
-            e.printStackTrace();
-            return "服务器内部错误！";
-        }
-    }
-
-    //新建系统用户
-    @ResponseBody
-    @RequestMapping(value = "createManageUser" , method = RequestMethod.POST, produces = "text/html;charset=utf-8")
-    public String createManageUser(User user){
-        try{
-            user.setTime(DateFormatUtils.format(new Date(),"yyyy-MM-dd HH:mm:ss"));
-            user.setNickName(user.getName());
-            user.setImg("default_picture.png");
-            user.setGrayImg("default_picture.png");
-            user.setIp("XX");
-            user.setUserRegion("XX");
-            user.setUserCity("XX");
-            user.setStruts("1");
-            user.setPassword(EncryptionAndDecryptionUtil.getEncryptionPassword(user.getPassword())); //获取加密后的密码;
-            userService.createUser(user);
-            return "用户创建成功！";
-        }catch (Exception e){
-            e.printStackTrace();
-            return "服务器内部错误！";
-        }
     }
 
     //个人信息查看
@@ -472,7 +404,7 @@ public class UserController {
         List<Role> roleList = userService.getAllRoles();
         ModelAndView mv = new ModelAndView();
         Gson gson = new Gson();
-        mv.addObject("roles", gson.toJson(roleList));
+        mv.addObject("roles", roleList);
         mv.setViewName("jsp/systemRoleManage.jsp");
         return mv;
     }
@@ -613,6 +545,77 @@ public class UserController {
             if(permissionsId != null){
                 //后添加
                 menuPermissionService.insertMenuPermissionByRoleId(rid,permissionsId);
+            }
+            return "操作成功！";
+        }catch (Exception e){
+            e.printStackTrace();
+            return "操作失败！";
+        }
+    }
+
+    /**
+     *  用户相关开始
+     */
+    //系统用户管理
+    @RequestMapping("getAllUsers")
+    public ModelAndView getAllUsers(){
+        //所有用户列表
+        List<User> userList = userService.getAllUsers();
+        ModelAndView mv = new ModelAndView();
+        Gson gson = new Gson();
+        mv.addObject("users", userList);
+        mv.setViewName("jsp/systemUserManage.jsp");
+        return mv;
+    }
+
+    //新建系统用户
+    @ResponseBody
+    @RequestMapping(value = "createManageUser" , method = RequestMethod.POST, produces = "text/html;charset=utf-8")
+    public String createManageUser(User user){
+        try{
+            user.setTime(DateFormatUtils.format(new Date(),"yyyy-MM-dd HH:mm:ss"));
+            user.setNickName(user.getName());
+            user.setImg("default_picture.png");
+            user.setGrayImg("default_picture.png");
+            user.setIp("XX");
+            user.setUserRegion("XX");
+            user.setUserCity("XX");
+            user.setStruts("1");
+            user.setPassword(EncryptionAndDecryptionUtil.getEncryptionPassword(user.getPassword())); //获取加密后的密码;
+            userService.createUser(user);
+            return "用户创建成功！";
+        }catch (Exception e){
+            e.printStackTrace();
+            return "服务器内部错误！";
+        }
+    }
+
+    //为系统用户重置密码
+    @ResponseBody
+    @RequestMapping(value = "resettingPasswordForUserByUserId" , method = RequestMethod.POST, produces = "text/html;charset=utf-8")
+    public String resettingPasswordForUserByUserId(int uid , String newPwd){
+        try{
+            String enctyptionPwd = EncryptionAndDecryptionUtil.getEncryptionPassword(newPwd); //获取加密后的密码
+            userService.updateUserPwdByUid(uid,enctyptionPwd);  //重置系统用户密码
+            return "密码更新成功！";
+        }catch (Exception e){
+            e.printStackTrace();
+            return "服务器内部错误！";
+        }
+    }
+
+    //禁用、启用系统用户
+    @ResponseBody
+    @RequestMapping(value = "updateUserStrutsByUid" , method = RequestMethod.POST, produces = "text/html;charset=utf-8")
+    public String updateUserStrutsByUid(int uid ){
+        try{
+            User user = userService.getUserById(uid);
+            if(user.getStruts().equals("1")){
+                //修改系统用户状态
+                userService.updateUserStrutsByUid(uid,0);
+            }else{
+                //修改系统用户状态
+                userService.updateUserStrutsByUid(uid,1);
             }
             return "操作成功！";
         }catch (Exception e){
