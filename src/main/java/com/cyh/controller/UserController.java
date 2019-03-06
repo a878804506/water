@@ -232,12 +232,6 @@ public class UserController {
         return "redirect:login";
     }
 
-    //菜单权限配置
-    @RequestMapping("menuTreeConfigure")
-    public ModelAndView menuTreeConfigure(HttpServletRequest request) throws MyException {
-        throw new MyException("本功能暂未开放！感谢使用！");
-    }
-
     //系统用户管理
     @RequestMapping("getAllUsers")
     public ModelAndView getAllUsers(){
@@ -579,8 +573,8 @@ public class UserController {
      *  角色与菜单关联关系 开始
      */
     //菜单权限管理    查询出所有的菜单
-    @RequestMapping("menuTreeConfigureForRole")
-    public ModelAndView getMenuTreeAndAllUsersByUserId(HttpServletRequest request){
+    @RequestMapping("getRolesAndMenus")
+    public ModelAndView getRolesAndMenus(HttpServletRequest request){
         //所有菜单列表，包括permission
         List<MenuPermission> menuListtemp = MenuPermissionUtil.getMenuTree(menuPermissionService.getAllMenu());
         //角色列表
@@ -589,7 +583,7 @@ public class UserController {
         ModelAndView mv = new ModelAndView();
         mv.addObject("roles", roleList);
         mv.addObject("menus", gson.toJson(menuListtemp));
-        mv.setViewName("jsp/menuTreeConfigure.jsp");
+        mv.setViewName("jsp/systemRoleAndMenuMapping.jsp");
         return mv;
     }
 
@@ -625,5 +619,11 @@ public class UserController {
             e.printStackTrace();
             return "操作失败！";
         }
+    }
+
+    //菜单权限配置
+    @RequestMapping("menuTreeConfigure")
+    public ModelAndView menuTreeConfigure(HttpServletRequest request) throws MyException {
+        throw new MyException("本功能暂未开放！感谢使用！");
     }
 }
