@@ -106,13 +106,29 @@ public class UserController {
             if (StringUtils.isEmpty(time)) {
                 time = "您是新用户！。。";
             }
-            //该用户能看到的菜单列表  type = 'menu'
-            List<MenuPermission> menuListtemp = MenuPermissionUtil.getMenuTree(menuPermissionService.getMenuByUserId(loginuser.getId()));
-            //变成菜单tree,然后存入session
-            Gson gson = new Gson();
-            session.setAttribute("userMenuList", gson.toJson(menuListtemp));
-            //取该用户所有授权 并存入session  type = 'permission'
-            session.setAttribute("permissionList", menuPermissionService.getPermissionListByUserId(loginuser.getId()));
+
+            //根据用户id获取用户的有效角色的id
+            List<Integer> roleIds = userService.getRolesListByUserId(loginuser.getId());
+            if(null != roleIds && roleIds.size() != 0){
+                // 菜单和权限集合
+                List<MenuPermission> allMenusAndPermissions = menuPermissionService.getAllMenusAndPermissionsByRoleIds(roleIds);
+                // 分离的菜单
+                List<MenuPermission> menus = new ArrayList<>();
+                // 分离的页面内权限
+                List<MenuPermission> permissions = new ArrayList<>();
+
+                for (MenuPermission mp : allMenusAndPermissions) {
+                    if("menu".equals(mp.getType())){
+                        menus.add(mp);
+                    }else if("permission".equals(mp.getType())){
+                        permissions.add(mp);
+                    }
+                }
+                //变成菜单tree,然后存入session
+                session.setAttribute("menuList", new Gson().toJson(MenuPermissionUtil.getMenuTree(menus)));
+                //用户的授权 并存入session
+                session.setAttribute("permissionList", permissions);
+            }
 
             // 登录信息存入session
             session.setAttribute("user", loginuser);

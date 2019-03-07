@@ -23,7 +23,7 @@
 
         <script type="text/javascript">
             $(function () {
-                var menuList = ${sessionScope.userMenuList};
+                var menuList = ${sessionScope.menuList};
                 var sbStr = "";
                 for (var i = 0; i < menuList.length; i++) {
                     sbStr += "<dd>" +

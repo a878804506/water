@@ -91,4 +91,9 @@ public class UserServiceImpl implements UserService {
     public int insertUserAndRolesMappings(int userId, int[] roleIds) {
         return userMapper.insertUserAndRolesMappings(userId,roleIds);
     }
+
+    @Override
+    public List<Integer> getRolesListByUserId(int userId) {
+        return userMapper.getRolesListByUserId(userId);
+    }
 }

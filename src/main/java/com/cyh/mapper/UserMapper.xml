@@ -84,4 +84,16 @@
 			(#{userId},#{rid})
 		</foreach>
 	</insert>
+
+	<select id="getRolesListByUserId" resultType="java.lang.Integer">
+	    SELECT
+			t.roleid
+		FROM
+			user_role t,
+			role t1
+		WHERE
+			t.roleid = t1.id
+			AND t1.`status` = 1
+			AND t.userid = ${userId}
+	</select>
 </mapper>

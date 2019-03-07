@@ -14,16 +14,6 @@ public class MenuPermissionServiceImpl implements MenuPermissionService {
     private MenuPermissionMapper menuPermissionMapper;
 
     @Override
-    public List<MenuPermission> getMenuByUserId(Integer uid) {
-        return menuPermissionMapper.getMenuByUserId(uid);
-    }
-
-    @Override
-    public List<MenuPermission> getPermissionListByUserId(Integer uid) {
-        return menuPermissionMapper.getPermissionListByUserId(uid);
-    }
-
-    @Override
     public List<MenuPermission> getAllMenu() {
         return menuPermissionMapper.getAllMenu();
     }
@@ -41,5 +31,10 @@ public class MenuPermissionServiceImpl implements MenuPermissionService {
     @Override
     public int insertMenuPermissionByRoleId(int rid,int[] permissionsId) {
         return menuPermissionMapper.insertMenuPermissionByRoleId(rid,permissionsId);
+    }
+
+    @Override
+    public List<MenuPermission> getAllMenusAndPermissionsByRoleIds(List<Integer> roleIds) {
+        return menuPermissionMapper.getAllMenusAndPermissionsByRoleIds(roleIds);
     }
 }

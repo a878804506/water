@@ -52,4 +52,7 @@ public interface UserMapper {
 
     //增加用户角色的映射
     int insertUserAndRolesMappings(@Param(value="userId")int userId,@Param(value="roleIds")int []roleIds);
+
+    //根据用户id 获取有效角色的id集合
+    List<Integer> getRolesListByUserId(@Param(value="userId")int userId);
 }

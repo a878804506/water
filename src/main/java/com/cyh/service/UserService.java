@@ -52,4 +52,7 @@ public interface UserService {
 
     //增加用户角色的映射
     int insertUserAndRolesMappings(int userId,int []roleIds);
+
+    //根据用户id 获取有效角色的id集合
+    List<Integer> getRolesListByUserId(int userId);
 }
