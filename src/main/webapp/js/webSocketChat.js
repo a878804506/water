@@ -24,6 +24,7 @@ var interval =null;
 
 $(function(){
     if("true" == webSocketChatSwitch){
+
         //建立WebSocket连接
         createWebSocketClient(sessionId,userId);
 
@@ -266,7 +267,11 @@ function createWebSocketClient(sessionId,userId){
 
         socket.onclose = function(event) {
             $("#responseText").val("连接被关闭!");
-            console.log("连接开启!");
+            console.log("连接关闭!");
+        };
+
+        socket.onerror = function(event) {
+            console.log("出现异常！");
         };
 
     } else {

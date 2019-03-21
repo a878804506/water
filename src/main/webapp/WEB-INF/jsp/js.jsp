@@ -3,7 +3,7 @@ String path = request.getContextPath();
 String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
 %>
 <!-- 引用的js -->
-<script language="JavaScript" src="<%=path %>/js/JQuery.js"></script>
+<script language="JavaScript" src="<%=path %>/js/jquery-3.3.1.min.js"></script>
 <script language="JavaScript" src="<%=path %>/js/bootstrap.min.js"></script>
 <script language="JavaScript" src="<%=path %>/js/bootbox.min.js"></script>
 <script language="JavaScript" src="<%=path %>/js/jquery.ztree.core.js"></script>

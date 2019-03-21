@@ -10,7 +10,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <title>水务管理系统</title>
-  <script language="JavaScript" src="<%=path %>/js/JQuery.js"></script>
+  <script language="JavaScript" src="<%=path %>/js/jquery-3.3.1.min.js"></script>
   <script language="JavaScript" src="<%=path %>/js/bootstrap.min.js"></script>
   <script language="JavaScript" src="<%=path %>/js/bootbox.min.js"></script>
   <script language="JavaScript" src="<%=path %>/js/jquery.ztree.core.js"></script>

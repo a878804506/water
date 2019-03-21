@@ -17,7 +17,7 @@
     <!-- 最小化时 未读消息条数 -->
     <div class="chat-message-num" id="allMessage"></div>
 
-    <div class="chatBox" ref="chatBox">
+    <div class="chatBox" ref="chatBox" id="chatBox">
         <!-- 聊天主体展开时的头部 开始 -->
         <div class="chatBox-head">
             <div class="chatBox-head-one">
