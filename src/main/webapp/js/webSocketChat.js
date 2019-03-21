@@ -263,6 +263,9 @@ function createWebSocketClient(sessionId,userId){
         socket.onopen = function(event) {
             $("#responseText").val("连接开启!");
             console.log("连接开启!");
+            $("#contactsTable").removeClass("OverLoad");
+            $("#chatBox_Ex").hide();
+            $("#chatBox_Conning").hide();
         };
 
         socket.onclose = function(event) {
@@ -272,6 +275,9 @@ function createWebSocketClient(sessionId,userId){
 
         socket.onerror = function(event) {
             console.log("出现异常！");
+            $("#contactsTable").addClass("OverLoad");
+            $("#chatBox_Conning").hide();
+            $("#chatBox_Ex").show();
         };
 
     } else {
@@ -462,4 +468,12 @@ function CurentTime(){
     if (ss < 10) clock += '0';
     clock += ss;
     return clock;
+}
+
+//webSocket 重连
+function reConnect(){
+    $("#chatBox_Ex").hide(); // 隐藏连接异常提示，
+    $("#chatBox_Conning").show() // 提示正在连接。。。
+    //重新建立WebSocket连接
+    createWebSocketClient(sessionId,userId);
 }

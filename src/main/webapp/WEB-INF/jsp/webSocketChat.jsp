@@ -41,7 +41,14 @@
         <div class="chatBox-info">
             <!-- 聊天主体展开时的联系人列表 开始 -->
             <div class="chatBox-list" ref="chatBoxlist" id="contactsTable">
-
+                <!-- 连接异常时 显示此div-->
+                <div class="chatBox_Conn" id="chatBox_Ex" style="display:block;background:url(./images/warning.png) no-repeat scroll 5px 10px;">
+                    <span style="font-size: 16px">连接异常，请<input name="" type="button" class="btn btn-info btn-sm" value="重试" onclick="reConnect()"/></span>
+                </div>
+                <!-- 正在连接时 显示此div-->
+                <div class="chatBox_Conn" id="chatBox_Conning" style="display:none;background:url(./images/loading.gif) no-repeat scroll 5px 10px;">
+                    <span style="font-size: 16px">正在连接，请稍后！</span>
+                </div>
             </div>
             <!-- 聊天主体展开时的联系人列表 结束 -->
 
