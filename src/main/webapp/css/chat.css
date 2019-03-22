@@ -513,6 +513,7 @@
     padding-left: 50px;
     padding-right: 5px;
     /*border: 2px solid #e7130d;*/
+    z-index:999;
 }
 
 .OverLoad{
@@ -522,5 +523,5 @@
     height:110%;
     top:0;
     background: rgba(0, 0, 0, 0.27);
-    z-index:19950707;
+    z-index:888;
 }

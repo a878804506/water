@@ -257,6 +257,10 @@ function createWebSocketClient(sessionId,userId){
             }else if(dataJson.type == 5){  //最新联系人列表  有用户下线时的最新联系人列表
                 //刷新成最新的联系人列表
                 createNewContactsList(dataJson.data,false);
+            }else if(dataJson.type == 6){  // 对于客户端发出的心跳包 服务端给予了回应  type=6
+                if(dataJson.stauts){
+                    heartCheck.reset().start(); //拿到任何消息都说明当前连接是正常的  //如果后端有下发消息，那么就会重置初始化心跳检测，除非超时没下发，那么就会触发onclose
+                }
             }
         };
 
@@ -266,18 +270,21 @@ function createWebSocketClient(sessionId,userId){
             $("#contactsTable").removeClass("OverLoad");
             $("#chatBox_Ex").hide();
             $("#chatBox_Conning").hide();
+
+            heartCheck.reset().start(); //心跳检测重置   在open的时候触发心跳检测
         };
 
         socket.onclose = function(event) {
             $("#responseText").val("连接被关闭!");
             console.log("连接关闭!");
+            $("#contactsTable").empty();
+            $("#chatBox_Conning").hide();
+            $("#chatBox_Ex").show();
+            $("#contactsTable").addClass("OverLoad");
         };
 
         socket.onerror = function(event) {
             console.log("出现异常！");
-            $("#contactsTable").addClass("OverLoad");
-            $("#chatBox_Conning").hide();
-            $("#chatBox_Ex").show();
         };
 
     } else {
@@ -342,7 +349,7 @@ function selectImg(pic) {
     reader.readAsDataURL(pic.files[0]);
 }
 
-//进聊天页面
+//进入与某人的聊天页面
 function addClickForContacts(){
     $(".chat-list-people").each(function () {
         $(this).click(function () {
@@ -380,15 +387,6 @@ function addClickForContacts(){
         })
     });
 }
-
-//页面定时从服务器获取最新列表
-/*function getNewContactsListFromServer(){
-    var sendMsg = {};
-    sendMsg.id = "1";
-    sendMsg.userId = userId;
-    sendMsg.type = "5";
-    send(sendMsg);
-}*/
 
 //刷新成最新的联系人列表
 function createNewContactsList(newContactsList,isShow){
@@ -476,4 +474,39 @@ function reConnect(){
     $("#chatBox_Conning").show() // 提示正在连接。。。
     //重新建立WebSocket连接
     createWebSocketClient(sessionId,userId);
+}
+
+//心跳检测 type = 6
+var heartCheck = {
+    timeout: 10000,
+    timeoutObj: null,
+    serverTimeoutObj: null,
+    reset: function() {
+        clearTimeout(this.timeoutObj);
+        clearTimeout(this.serverTimeoutObj);
+        return this;
+    },
+    start: function() {
+        var self = this;
+        this.timeoutObj = setTimeout(function() {
+            //这里发送一个心跳，后端收到后，返回一个心跳消息，
+            //onmessage拿到返回的心跳就说明连接正常
+            var sendMsg = {};
+            sendMsg.id = "6";
+            sendMsg.userId = userId;
+            sendMsg.sessionId = sessionId;
+            sendMsg.type = "6";
+            send(sendMsg);
+
+            self.serverTimeoutObj = setTimeout(function() { //如果超过一定时间还没重置，说明后端主动断开了
+                console.log("超时");
+                socket.onclose();
+                //这里为什么要在send检测消息后，倒计时执行这个代码呢，因为这个代码的目的时为了触发onclose方法，这样才能实现onclose里面的重连方法
+                //所以这个代码也很重要，没有这个方法，有些时候发了定时检测消息给后端，后端超时（我们自己设定的时间）后，不会自动触发onclose方法。我们只有执行ws.close()代码，让ws触发onclose方法
+                //的执行。如果没有这个代码，连接没有断线的情况下而后端没有正常检测响应，那么浏览器时不会自动超时关闭的（比如谷歌浏览器）,谷歌浏览器会自动触发onclose
+                //是在断网的情况下，在没有断线的情况下，也就是后端响应不正常的情况下，浏览器不会自动触发onclose，所以需要我们自己设定超时自动触发onclose，这也是这个代码的
+                //的作用。
+            }, self.timeout)
+        }, this.timeout)
+    }
 }
