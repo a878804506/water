@@ -79,7 +79,7 @@ public class FtpUtil {
                 if(fis != null){
                     IOUtils.closeQuietly(fis);
                 }
-                closeConnect();
+//                closeConnect();
             }
         }
         return flag;
@@ -127,7 +127,7 @@ public class FtpUtil {
             } catch (IOException e) {
                 LOGGER.error("下载文件失败", e);
             } finally {
-                closeConnect();
+//                closeConnect();
             }
         }
         return flag;
@@ -172,7 +172,7 @@ public class FtpUtil {
             } catch (IOException e) {
                 LOGGER.error("下载文件失败", e);
             } finally {
-                closeConnect();
+//                closeConnect();
             }
         }
         return flag;
@@ -221,7 +221,7 @@ public class FtpUtil {
             } catch (IOException e) {
                 LOGGER.error("获取文件失败", e);
             } finally {
-                closeConnect();
+//                closeConnect();
             }
         }
         return map;
@@ -271,7 +271,7 @@ public class FtpUtil {
             } catch (IOException e) {
                 LOGGER.error("获取文件失败", e);
             } finally {
-                closeConnect();
+//                closeConnect();
             }
         }
         return byteStream.toByteArray();
@@ -311,7 +311,7 @@ public class FtpUtil {
             } catch (IOException e) {
                 LOGGER.error("获取文件失败", e);
             } finally {
-                closeConnect();
+//                closeConnect();
             }
         }
         return map;
@@ -353,7 +353,7 @@ public class FtpUtil {
             } catch (IOException e) {
                 LOGGER.error("获取文件失败", e);
             } finally {
-                closeConnect();
+//                closeConnect();
             }
         }
         return input;
@@ -379,7 +379,7 @@ public class FtpUtil {
             } catch (IOException e) {
                 LOGGER.error("删除文件失败", e);
             } finally {
-                closeConnect();
+//                closeConnect();
             }
         }
         return flag;
@@ -412,7 +412,7 @@ public class FtpUtil {
             } catch (IOException e) {
                 LOGGER.error("删除文件失败", e);
             } finally {
-                closeConnect();
+//                closeConnect();
             }
         }
         return flag;
@@ -422,18 +422,22 @@ public class FtpUtil {
      * 连接FTP服务器
      */
     private static void login() {
-        ftpClient = new FTPClient();
-        try {
-            ftpClient.connect(Constants.ftp_hostname, Constants.ftp_port);
-            ftpClient.login(Constants.ftp_username, Constants.ftp_password);
-            ftpClient.setFileType(FTPClient.BINARY_FILE_TYPE);
-            int reply = ftpClient.getReplyCode();
-            if (!FTPReply.isPositiveCompletion(reply)) {
-                closeConnect();
-                LOGGER.error("FTP服务器连接失败");
+        if(ftpClient == null){
+            ftpClient = new FTPClient();
+            try {
+                ftpClient.connect(Constants.ftp_hostname, Constants.ftp_port);
+                ftpClient.login(Constants.ftp_username, Constants.ftp_password);
+                ftpClient.setFileType(FTPClient.BINARY_FILE_TYPE);
+                int reply = ftpClient.getReplyCode();
+                if (!FTPReply.isPositiveCompletion(reply)) {
+//                    closeConnect();
+                    LOGGER.error("FTP服务器连接失败");
+                }
+            } catch (Exception e) {
+                LOGGER.error("FTP登录失败", e);
             }
-        } catch (Exception e) {
-            LOGGER.error("FTP登录失败", e);
+        }else{
+            System.out.println("ftp连接还活着呢");
         }
     }
 

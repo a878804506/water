@@ -154,6 +154,69 @@ $(function(){
     }
 })
 
+// 选择图片后先校验是否为图片然后在调用selectImg 方法发送
+function preview(fileObject){
+    var image = fileObject.files[0] ;
+    var AllowImgFileSize = 2100000; //上传图片最大值(单位字节)（ 2 M = 2097152 B ）超过2M上传失败
+    //名称
+    var fileName = image.name;
+    //大小 字节
+    var fileSize = image.size;
+    //类型
+    var fileType = image.type;
+    // 判断文件类型
+    if(fileType != ".jpg" && fileType != ".JPG" && fileType != "image/jpeg" &&
+        fileType != ".png" && fileType != ".PNG" && fileType != "image/png"  &&
+        fileType != ".gif" && fileType != ".GIF" && fileType != "image/gif" &&
+        fileType != ".bmp" && fileType != ".BMP" && fileType != "image/bmp"){
+        bootbox.alert("请选择图片!");
+        return;
+    }
+    // 大小 字节
+    if(fileSize > AllowImgFileSize){
+        bootbox.alert("不支持大于2M的图片!");
+        return;
+    }
+    //发送图片
+    selectImg(fileObject);
+}
+// 发送图片  pic是一个类型为file的input框
+function selectImg(pic) {
+    if (!pic.files || !pic.files[0]) {
+        return;
+    }
+    // 生成图片id
+    var uuidForPic = userId+"_"+$("#toUserId").val()+"_"+(new Date()).getTime()+"_"+Math.floor(Math.random()*8999+1000)
+    console.log(uuidForPic);
+    var reader = new FileReader();
+    reader.onload = function (evt) {
+        var images = evt.target.result;
+        console.log(images);
+        $(".chatBox-content-demo").append("<div class=\"clearfloat\">" +
+            "<div class=\"author-name\"><small class=\"chat-date\">"+CurentTime()+"</small> </div> " +
+            "<div class=\"right\"> <div class=\"chat-message\">" +
+            "<img src=" + images + " id="+uuidForPic+"></div> " +
+            "<div class=\"sending\"></div>" +
+            "<div class=\"chat-avatars\"><img src=\""+me.img+"\" alt=\"头像\" /></div> </div> </div>");
+        //聊天框默认最底部
+        $(document).ready(function () {
+            $("#chatBox-content-demo").scrollTop($("#chatBox-content-demo")[0].scrollHeight);
+        });
+
+        //webSocket 发送图片
+        var sendMsg = {};
+        sendMsg.id = uuidForPic;
+        sendMsg.msgType = "2"; //文本消息：0，表情：1，图片：2
+        sendMsg.from = userId;
+        sendMsg.to = $("#toUserId").val();
+        sendMsg.data = images;
+        sendMsg.type = "2";
+        send(sendMsg);
+
+    };
+    reader.readAsDataURL(pic.files[0]);
+}
+
 function createWebSocketClient(sessionId,userId){
     var webSocketLogin  = "{\"id\":\""+sessionId+"\",\"userId\":\""+userId+"\"}";
     if (!window.WebSocket) {
@@ -326,27 +389,6 @@ function screenFuc() {
         $(".chatBox-kuang").css("height", 495);
         $(".div-textarea").css("width", 260);
     }
-}
-
-//      发送图片
-function selectImg(pic) {
-    if (!pic.files || !pic.files[0]) {
-        return;
-    }
-    var reader = new FileReader();
-    reader.onload = function (evt) {
-        var images = evt.target.result;
-
-        $(".chatBox-content-demo").append("<div class=\"clearfloat\">" +
-            "<div class=\"author-name\"><small class=\"chat-date\">"+CurentTime()+"</small> </div> " +
-            "<div class=\"right\"> <div class=\"chat-message\"><img src=" + images + "></div> " +
-            "<div class=\"chat-avatars\"><img src=\"img/icon01.png\" alt=\"头像\" /></div> </div> </div>");
-        //聊天框默认最底部
-        $(document).ready(function () {
-            $("#chatBox-content-demo").scrollTop($("#chatBox-content-demo")[0].scrollHeight);
-        });
-    };
-    reader.readAsDataURL(pic.files[0]);
 }
 
 //进入与某人的聊天页面

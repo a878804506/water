@@ -525,3 +525,14 @@
     background: rgba(0, 0, 0, 0.27);
     z-index:888;
 }
+
+/*发送图片时的 正在发送图片遮罩层*/
+.sending{
+    float: left;
+    width: 25px;
+    height: 25px;
+    margin-right: 4px;
+    background: url(../images/loading.gif) no-repeat;
+    /*background: url(../images/sendSuccess.png) no-repeat;*/
+    background-size: cover;
+}

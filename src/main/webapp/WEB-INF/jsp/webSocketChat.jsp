@@ -71,7 +71,7 @@
                                 <i class="iconfont icon-biaoqing"></i>
                             </button>
                             <label id="chat-tuxiang" title="发送图片" for="inputImage" class="btn-default-styles">
-                                <input type="file" onchange="selectImg(this)" accept="image/jpg,image/jpeg,image/png"
+                                <input type="file" onchange="preview(this)" accept="image/jpg,image/jpeg,image/png"
                                        name="file" id="inputImage" class="hidden">
                                 <i class="iconfont icon-tuxiang"></i>
                             </label>
