@@ -172,51 +172,75 @@ function preview(fileObject){
         bootbox.alert("请选择图片!");
         return;
     }
-    // 大小 字节
-    if(fileSize > AllowImgFileSize){
+    // 大小 字节   暂时解除 2M大小限制
+    /*if(fileSize > AllowImgFileSize){
         bootbox.alert("不支持大于2M的图片!");
         return;
-    }
+    }*/
     //发送图片
     selectImg(fileObject);
 }
 // 发送图片  pic是一个类型为file的input框
+var sendImg = {};
 function selectImg(pic) {
     if (!pic.files || !pic.files[0]) {
         return;
     }
+    var time = (new Date()).getTime();
+    var radom = Math.floor(Math.random()*8999+1000);
+    // 正则匹配文件后缀
+    var fileExt=(/[.]/.exec(pic.files[0].name)) ? /[^.]+$/.exec(pic.files[0].name.toLowerCase()) : '';
     // 生成图片id
-    var uuidForPic = userId+"_"+$("#toUserId").val()+"_"+(new Date()).getTime()+"_"+Math.floor(Math.random()*8999+1000)
-    console.log(uuidForPic);
-    var reader = new FileReader();
-    reader.onload = function (evt) {
-        var images = evt.target.result;
-        console.log(images);
+    var uuidForPic = userId+"_"+$("#toUserId").val()+"_"+time+"_"+radom+"."+fileExt[0];
+    //文件上传的时候展示base64图片
+    var readerInfo = new FileReader();
+    readerInfo.readAsDataURL(pic.files[0]);
+    readerInfo.onload = function (evt) {
+        var base64Image = evt.target.result;
         $(".chatBox-content-demo").append("<div class=\"clearfloat\">" +
             "<div class=\"author-name\"><small class=\"chat-date\">"+CurentTime()+"</small> </div> " +
             "<div class=\"right\"> <div class=\"chat-message\">" +
-            "<img src=" + images + " id="+uuidForPic+"></div> " +
-            "<div class=\"sending\"></div>" +
+            "<img src=" + base64Image + " id="+uuidForPic+"></div> " +
+            "<div class=\"sending\" id=\""+radom+"\"></div>" +
             "<div class=\"chat-avatars\"><img src=\""+me.img+"\" alt=\"头像\" /></div> </div> </div>");
         //聊天框默认最底部
         $(document).ready(function () {
             $("#chatBox-content-demo").scrollTop($("#chatBox-content-demo")[0].scrollHeight);
         });
+    }
 
-        //webSocket 发送图片
-        var sendMsg = {};
-        sendMsg.id = uuidForPic;
-        sendMsg.msgType = "2"; //文本消息：0，表情：1，图片：2
-        sendMsg.from = userId;
-        sendMsg.to = $("#toUserId").val();
-        sendMsg.data = images;
-        sendMsg.type = "2";
-        send(sendMsg);
+    var reader = new FileReader();
+    reader.readAsArrayBuffer(pic.files[0]);
+    reader.onload = function (evt) {
+        var image = evt.target.result;
+        console.log(image.byteLength);
+        if (!window.WebSocket) {
+            return;
+        }
+        if (socket.readyState == WebSocket.OPEN) {
+            var sendInfoData = new Array(); // 发送信息
+            sendInfoData.push(userId);
+            sendInfoData.push($("#toUserId").val());
+            sendInfoData.push(time);
+            sendInfoData.push(radom);
+            sendInfoData.push(fileExt[0]);
+            //webSocket 发送图片
+            sendImg.id = uuidForPic;
+            sendImg.msgType = "2"; //文本消息：0，表情：1，图片：2
+            sendImg.from = userId;
+            sendImg.to = $("#toUserId").val();
+            sendImg.data = sendInfoData;
+            sendImg.type = "2";
 
-    };
-    reader.readAsDataURL(pic.files[0]);
+            socket.send(image);//先发送图片
+        } else {
+            $("#responseText").val("连接没有开启.");
+        }
+    }
+
 }
 
+// 创建连接、重连
 function createWebSocketClient(sessionId,userId){
     var webSocketLogin  = "{\"id\":\""+sessionId+"\",\"userId\":\""+userId+"\"}";
     if (!window.WebSocket) {
@@ -323,6 +347,18 @@ function createWebSocketClient(sessionId,userId){
             }else if(dataJson.type == 6){  // 对于客户端发出的心跳包 服务端给予了回应  type=6
                 if(dataJson.stauts){
                     heartCheck.reset().start(); //拿到任何消息都说明当前连接是正常的  //如果后端有下发消息，那么就会重置初始化心跳检测，除非超时没下发，那么就会触发onclose
+                }
+            }else if(dataJson.type == 7){ // 服务器向客户端发来指令说：文件已经暂时保存，进入发送状态，就可以再次确认发送文件
+                sendImg.fileKey = dataJson.fileKey;
+                send(sendImg);// 确认发送
+            }else if(dataJson.type == 8){ //服务器反馈图片发送的状态
+                if(dataJson.sendPicStruts == true){
+                    console.log("图片发送成功");
+                    $("#"+dataJson.id).removeClass("sending");
+                    $("#"+dataJson.id).addClass("sendSuccess");
+                    console.log($("#"+dataJson.id));
+                }else{
+                    console.log("图片发送失败");
                 }
             }
         };
