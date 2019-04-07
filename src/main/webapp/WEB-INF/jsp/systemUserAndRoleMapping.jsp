@@ -28,7 +28,7 @@
                     dataType: "json",
                     success: function (data) {
                         //取消所有勾选
-                        $('input[name=role]').attr('checked', false);
+                        $('input[name=role]').prop('checked', false);
                         var a = $("#roleTab input:checkbox");
                         $.each(data,function(index,roleId){
                             $.each(a,function(){

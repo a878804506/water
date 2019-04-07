@@ -200,7 +200,7 @@ function selectImg(pic) {
         $(".chatBox-content-demo").append("<div class=\"clearfloat\">" +
             "<div class=\"author-name\"><small class=\"chat-date\">"+CurentTime()+"</small> </div> " +
             "<div class=\"right\"> <div class=\"chat-message\">" +
-            "<img src=" + base64Image + " id="+uuidForPic+"></div> " +
+            "<img src=" + base64Image + " id="+uuidForPic+" onclick=clickThisPic(\""+base64Image+"\");></div> " +
             "<div class=\"sending\" id=\""+radom+"\"></div>" +
             "<div class=\"chat-avatars\"><img src=\""+me.img+"\" alt=\"头像\" /></div> </div> </div>");
         //聊天框默认最底部
@@ -324,16 +324,21 @@ function createWebSocketClient(sessionId,userId){
                 $(".chatBox-content-demo").empty();
                 var temp = JSON.parse(dataJson.data);
                 for(var i = 0 ; i < temp.length ; i ++){
+                    var msg = temp[i].data;
+                    if(temp[i].msgType == "2"){
+                        msg = "<img src=\"" + msg + "\" onclick=clickThisPic(\""+temp[i].data+"\");>";
+                    }
                     if(temp[i].from == userId){  //说明是自己发送的历史消息  应该右边靠齐显示
                         oneToOneHistoryMessage +="<div class=\"clearfloat\">" +
                             "<div class=\"author-name\"><small class=\"chat-date\">"+temp[i].date+"</small> </div> " +
-                            "<div class=\"right\"> <div class=\"chat-message\"> " + temp[i].data + " </div> " +
+                            "<div class=\"right\"> <div class=\"chat-message\"> " + msg + " </div> " +
                             "<div class=\"chat-avatars\"><img src=\""+contactsListForPicture.get(temp[i].from)+"\" alt=\"头像\" /></div> </div> </div>";
                     }else{
                         oneToOneHistoryMessage +="<div class='clearfloat'>"+
                             "<div class='author-name'><small class='chat-date'>"+temp[i].date+"</small></div>"+
-                            "<div class='left'><div class='chat-avatars'><img src='"+contactsListForPicture.get(temp[i].from)+"' alt='头像'/></div>"+
-                            "<div class='chat-message'>"+temp[i].data+"</div></div></div>";
+                            "<div class='left'><div class='chat-avatars'>" +
+                            "<img src='"+contactsListForPicture.get(temp[i].from)+"' alt='头像'/></div>"+
+                            "<div class='chat-message'>"+msg+"</div></div></div>";
                     }
                 }
                 $(".chatBox-content-demo").append(oneToOneHistoryMessage);
@@ -369,13 +374,16 @@ function createWebSocketClient(sessionId,userId){
             $("#contactsTable").removeClass("OverLoad");
             $("#chatBox_Ex").hide();
             $("#chatBox_Conning").hide();
-
             heartCheck.reset().start(); //心跳检测重置   在open的时候触发心跳检测
         };
 
         socket.onclose = function(event) {
             $("#responseText").val("连接被关闭!");
             console.log("连接关闭!");
+
+            if(struts != "-1" && struts != "0"){
+                $(".chat-return").click();
+            }
             $("#contactsTable").empty();
             $("#chatBox_Conning").hide();
             $("#chatBox_Ex").show();
@@ -587,4 +595,9 @@ var heartCheck = {
             }, self.timeout)
         }, this.timeout)
     }
+}
+
+// 点击图片事件
+function clickThisPic(thisPicAddress){
+    console.log(thisPicAddress);
 }
