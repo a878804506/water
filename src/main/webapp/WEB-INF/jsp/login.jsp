@@ -74,7 +74,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
     top.location.href = location.href;
 </script>
 <!-- 定位上网ip -->
-<Script src="http://pv.sohu.com/cityjson"></Script>
+<Script src="https://pv.sohu.com/cityjson"></Script>
 <script language="javascript">
 	$(function(){
 	    $('.loginbox').css({'position':'absolute','left':($(window).width()-692)/2});
