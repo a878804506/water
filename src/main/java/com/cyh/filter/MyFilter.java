@@ -30,12 +30,12 @@ public class MyFilter implements Filter {
         HttpServletResponse rep = (HttpServletResponse) response;
         HttpServletRequest req =(HttpServletRequest) request;
         String url = ((HttpServletRequest)request).getRequestURI();
-        System.out.println("["+CommonUtil.DateToString(new Date(),"yyyy-MM-dd HH:mm:ss")+"]调用doFilter方法,url是："+url);
         //允许加载静态文件
-        if(url.endsWith(".js") || url.endsWith(".jpg") || url.endsWith(".gif") || url.endsWith(".png") ||url.endsWith(".css")){
+        if(url.endsWith(".js") || url.endsWith(".jpg") || url.endsWith(".gif") || url.endsWith(".png") ||url.endsWith(".css") ||url.endsWith(".map")){
             chain.doFilter(request,response);
             return;
         }
+        System.out.println("["+CommonUtil.DateToString(new Date(),"yyyy-MM-dd HH:mm:ss")+"]调用doFilter方法,url是："+url);
         //登陆、登陆验证放行
         if(url.indexOf("login") != -1 || url.indexOf("CUser.action") != -1){
             chain.doFilter(request,response);
