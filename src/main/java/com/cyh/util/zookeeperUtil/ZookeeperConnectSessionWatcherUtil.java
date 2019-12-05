@@ -7,12 +7,13 @@ public class ZookeeperConnectSessionWatcherUtil implements Runnable {
     @Override
     public void run() {
         try {
+            ZookeeperUtil.zkInit();
             ZookeeperUtil.zkConnect();
             if(!ZookeeperUtil.zkExists(ZookeeperUtil.PATH)){
-                ZookeeperUtil.zkCreate("once create this node for user state.".getBytes());
+                ZookeeperUtil.zkCreate(ZookeeperUtil.PATH,"once create this node for user state.".getBytes());
             }
             if(!ZookeeperUtil.zkExists(backupAndResetTables_JOB.BACKUPANDRESETTABLESPATH)){
-                ZookeeperUtil.zkCreate("once create this node for back.".getBytes());
+                ZookeeperUtil.zkCreate(backupAndResetTables_JOB.BACKUPANDRESETTABLESPATH,"once create this node for back.".getBytes());
             }
             ZookeeperUtil.zkNodeCache();
             ZookeeperUtil.zkPathChildrenCache(ZookeeperUtil.PATH);

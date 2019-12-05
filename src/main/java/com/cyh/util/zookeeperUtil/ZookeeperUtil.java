@@ -18,11 +18,13 @@ import java.util.List;
 
 public class ZookeeperUtil {
 
-    private static final String CONNECTSTR = "148.70.60.231:2181";
+    private static final String CONNECTSTR = "47.99.128.62:2181";
 
     private static final int SESSIONTIMEOUT = 60000;
 
     private static final int CONNECTIONTIMEOUT = 60000;
+
+    static final String NAMESPACE = "cyh";
 
     static final String PATH = "/waterUserForOnline";
 
@@ -32,6 +34,11 @@ public class ZookeeperUtil {
     private static final String AUTHINFO_ALL = "admin:cyh19930807@!";
     //只拥有读和写的权限
     private static final String AUTHINFO_READ_WRITE = "test:cyh19930807";
+
+    // zk节点是否需要权限控制
+    private static final Boolean zkHaveAuthInfo = false;
+
+    private static CuratorFramework client;
 
     // 自定义权限列表
     private static final List<ACL> acls = new ArrayList<ACL>();
@@ -47,15 +54,34 @@ public class ZookeeperUtil {
         }
     }
 
-    //CuratorFramework工厂，从工厂中创建zk对象
-    private static CuratorFramework client = CuratorFrameworkFactory.builder()
-        .connectString(CONNECTSTR)
-        .authorization("digest", AUTHINFO_ALL.getBytes()) //使用用户名/密码进行连接
-        .sessionTimeoutMs(SESSIONTIMEOUT)  //session 超时时间
-        .connectionTimeoutMs(CONNECTIONTIMEOUT)  // 客户端连接服务器超时时间
-        .namespace("cyh") //命名空间
-        .retryPolicy(new ExponentialBackoffRetry(1000, 3))
-        .build();
+    /**
+     * zk 初始化
+     *
+     * @throws Exception
+     */
+    public static void zkInit() {
+        if (zkHaveAuthInfo) {
+            try {
+                Id user1 = new Id("digest", DigestAuthenticationProvider.generateDigest(AUTHINFO_ALL));
+                Id user2 = new Id("digest", DigestAuthenticationProvider.generateDigest(AUTHINFO_READ_WRITE));
+                acls.add(new ACL(ZooDefs.Perms.ALL, user1));
+                acls.add(new ACL(ZooDefs.Perms.READ, user2));
+//            acls.add(new ACL(ZooDefs.Perms.READ | ZooDefs.Perms.WRITE , user2)); // 多个权限的给予方式，使用 | 位运算符
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            }
+        }
+        //CuratorFramework工厂，从工厂中创建zk对象
+        CuratorFrameworkFactory.Builder builder = CuratorFrameworkFactory.builder().connectString(CONNECTSTR);
+        if (zkHaveAuthInfo) {
+            builder.authorization("digest", AUTHINFO_READ_WRITE.getBytes()); //使用用户名/密码进行连接
+        }
+        client = builder.sessionTimeoutMs(SESSIONTIMEOUT)  //session 超时时间
+                .connectionTimeoutMs(CONNECTIONTIMEOUT)  // 客户端连接服务器超时时间
+                .namespace(NAMESPACE) //命名空间
+                .retryPolicy(new ExponentialBackoffRetry(1000, 3))
+                .build();
+    }
 
      /*  zookeeper的会话状态有以下几种：:(是跟客户端实例相关的)
      *  Disconneced     //连接失败
@@ -74,9 +100,13 @@ public class ZookeeperUtil {
      * inTransaction() 创建事务并开始
      *  and().commit()  事务提交
      */
-    public static void zkCreate(byte[] data) {
+    public static void zkCreate(String targetPath,byte[] data) {
         try {
-            client.inTransaction().create().withMode(CreateMode.PERSISTENT).withACL(acls).forPath(PATH,data).and().commit();
+            if (zkHaveAuthInfo) {
+                client.inTransaction().create().withMode(CreateMode.PERSISTENT).withACL(acls).forPath(targetPath,data).and().commit();
+            } else {
+                client.inTransaction().create().withMode(CreateMode.PERSISTENT).forPath(targetPath,data).and().commit();
+            }
         } catch (Exception e) {
             System.out.println("["+CommonUtil.DateToString(new Date(),"yyyy-MM-dd HH:mm:ss")+"] 节点创建失败!");
             e.printStackTrace();
@@ -91,7 +121,11 @@ public class ZookeeperUtil {
         try {
             if (zkExists(thisPath))
                 return ; //存在
-            client.inTransaction().create().withMode(CreateMode.PERSISTENT).withACL(acls).forPath(thisPath,(""+userId).getBytes()).and().commit();
+            if (zkHaveAuthInfo) {
+                client.inTransaction().create().withMode(CreateMode.PERSISTENT).withACL(acls).forPath(thisPath,(""+userId).getBytes()).and().commit();
+            } else {
+                client.inTransaction().create().withMode(CreateMode.PERSISTENT).forPath(thisPath,(""+userId).getBytes()).and().commit();
+            }
         } catch (Exception e) {
             System.out.println("["+CommonUtil.DateToString(new Date(),"yyyy-MM-dd HH:mm:ss")+"] 子节点创建失败!");
             e.printStackTrace();
@@ -105,7 +139,11 @@ public class ZookeeperUtil {
         try {
             if (zkExists(path))
                 return false; //存在
-            client.inTransaction().create().withMode(CreateMode.EPHEMERAL).withACL(acls).forPath(path,ipAndPort.getBytes()).and().commit();
+            if (zkHaveAuthInfo) {
+                client.inTransaction().create().withMode(CreateMode.EPHEMERAL).withACL(acls).forPath(path,ipAndPort.getBytes()).and().commit();
+            } else {
+                client.inTransaction().create().withMode(CreateMode.EPHEMERAL).forPath(path,ipAndPort.getBytes()).and().commit();
+            }
         } catch (Exception e) {
             System.out.println("["+CommonUtil.DateToString(new Date(),"yyyy-MM-dd HH:mm:ss")+"] 子节点创建失败!");
             e.printStackTrace();
@@ -113,33 +151,6 @@ public class ZookeeperUtil {
         }
         return true;
     }
-
-    // 读取数据节点数据
-    /*public static String zkGetData() {
-        String result = "";
-        try {
-            byte [] data = client.getData().forPath(PATH);
-            result = new String(data,"UTF-8");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return result;
-    }*/
-
-    // 修改节点中的数据
-    /*public static Boolean zkUpdate(byte[] data) {
-        //判断节点是否存在
-        if (!zkExists())
-            return false;
-        try {
-            Stat stat = client.setData().forPath(PATH);
-            client.inTransaction().setData().withVersion(stat.getVersion()).forPath(PATH, data).and().commit();
-        }catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-        return true;
-    }*/
 
     // 删除相应的子节点
     public static void zkDeleteSon(int userId) {
@@ -155,17 +166,6 @@ public class ZookeeperUtil {
         }
     }
 
-    // 删除路径下的节点
-    public static void zkDeleteToPath(String path) {
-        try {
-            if (!zkExists(path))
-                return ; //不存在
-            client.inTransaction().delete().forPath(path).and().commit();//只能删除叶子节点
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     // 判断节点是否存在
     public static Boolean zkExists(String path){
         try {
@@ -175,41 +175,6 @@ public class ZookeeperUtil {
             e.printStackTrace();
             return false;
         }
-    }
-
-    /**
-     * 判断节点是否是持久化节点
-     * @param path 路径
-     * @return 2-节点不存在  | 1-是持久化 | 0-临时节点
-     */
-    public int isPersistentNode(String path) {
-        try {
-            Stat stat = client.checkExists().forPath(path);
-            if (stat == null)
-                return 2;
-            if (stat.getEphemeralOwner() > 0)
-                return 1;
-            return 0;
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            return 2;
-        }
-    }
-
-    //获取子节点集合
-    public static List<String> zkGetChildren(String path){
-        try {
-            return client.getChildren().forPath(PATH);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return new ArrayList<String>();
-    }
-
-    // 关闭连接
-    public static void zkClose() throws InterruptedException {
-        client.close();
     }
 
     /*  下边列举了ZooKeeper中最常见的几个通知状态和事件类型

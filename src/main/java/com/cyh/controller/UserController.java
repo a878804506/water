@@ -192,49 +192,6 @@ public class UserController {
         }
     }
 
-    // 备份数据库 并发送邮件
-    @RequestMapping("beifen")
-    public ModelAndView beifen(HttpServletRequest request) throws Exception {
-        Date d = new Date();
-        SimpleDateFormat smf = new SimpleDateFormat("yyyyMMddHHmmSS");
-        // 备份产生的文件名字
-        String s1 = smf.format(d) + ".sql";
-        Properties pro = System.getProperties();
-        String osName = pro.getProperty("os.name");//获得当前操作系统的名称
-        // 获取项目目录下的 beifen 这个文件夹
-        String path = "";
-        // 获取mysqldump所在路径
-        String pathMysqldump = "";
-        if("linux".equalsIgnoreCase(osName)){
-            path = request.getSession().getServletContext().getRealPath("/")+"/beifen"; //linux环境下的路径
-            pathMysqldump = request.getSession().getServletContext().getRealPath("/")+"/src"; //linux环境下的路径
-        }else{
-            path = request.getSession().getServletContext().getRealPath("/")+"beifen"; //windows
-            pathMysqldump = request.getSession().getServletContext().getRealPath("/")+"src"; //windows
-        }
-        System.out.println("osName  是" + osName);
-        System.out.println("beifen  是" + path);
-        System.out.println("pathMysqldump  是" + pathMysqldump);
-        // 判断文件夹是否存在，不存在则创建
-        File file = new File(path);
-        if (!file.exists() && !file.isDirectory()) {
-            file.mkdir();
-        }
-        // 调用备份方法
-        System.out.println("备份开始！");
-        BeifenUtil.beifenMySQL(path, pathMysqldump, s1);
-        System.out.println("备份成功！");
-        // 备份完成后发送邮件，进行网络备份
-        System.out.println("开始发送邮件，进行网络备份！");
-        BeifenUtil.sendMail(smf.format(d), s1, path);
-        System.out.println("网络备份成功！");
-        ModelAndView mv = new ModelAndView();
-        mv.addObject("path", request.getSession().getServletContext().getRealPath("beifen"));
-        mv.addObject("path1", s1);
-        mv.setViewName("jsp/beifenSuccess.jsp");
-        return mv;
-    }
-
     // 用户退出功能
     @RequestMapping("out")
     public String out(HttpServletRequest request, HttpServletResponse response) throws Exception {
