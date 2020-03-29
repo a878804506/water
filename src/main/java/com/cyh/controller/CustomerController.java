@@ -171,6 +171,9 @@ public class CustomerController {
         if (req.getParameter("password").equals("2")) { // 如果点击 1-2月份个人水费账单 进来 设置默认月份为2月份
             session.setAttribute("mm", 2);
         }
+        if (req.getParameter("password").equals("4")) { // 如果点击 3-4月份个人水费账单 进来 设置默认月份为4月份
+            session.setAttribute("mm", 4);
+        }
         ModelAndView mv = new ModelAndView();
 
         // 统计的当天开票数量并展示
@@ -239,6 +242,9 @@ public class CustomerController {
             break;
         case 13:
             condition.setAB("thirteen");
+            break;
+        case 14:
+            condition.setAB("two");
             break;
         }
         condition.setId(customerNum);

@@ -259,6 +259,11 @@
                                 <option value="13" selected>1-2</option>
                             </select>
                         </c:if>
+                        <c:if test="${pwd==4 }"> <!-- 用户点击 "3-4月份个人水费账单"时，展示的页面"-->
+                            <select id="month" style="width:70px; height:32px;" name="month">
+                                <option value="14" selected>3-4</option>
+                            </select>
+                        </c:if>
                         &nbsp;&nbsp;
                         <a class="colorF">用户编号：</a><input name="id" type="text" class="inputType" placeholder="编号"
                                                           required id="id" value="${mi.uid }"/></li>&nbsp;&nbsp;
@@ -296,6 +301,9 @@
                     <td colspan="13" align="center">${mi.year }年<a class="colorFont">${mi.month }</a>月</td>
                 </c:if>
                 <c:if test="${pwd==2}"> <!-- 预览票据时判断是从哪个入口进的页面    ${mi.lianyue } 这是定死的数据-->
+                    <td colspan="13" align="center">${mi.year }年<a class="colorFont">${mi.lianyue }</a>月</td>
+                </c:if>
+                <c:if test="${pwd==4}"> <!-- 预览票据时判断是从哪个入口进的页面    ${mi.lianyue } 这是定死的数据-->
                     <td colspan="13" align="center">${mi.year }年<a class="colorFont">${mi.lianyue }</a>月</td>
                 </c:if>
             </tr>
@@ -358,12 +366,20 @@
                 <c:if test="${pwd==2}">
                     <td class="colorFont">${mi.twoandtwo }</td>
                 </c:if>
+                <c:if test="${pwd==4}">
+                    <td class="colorFont">${mi.twoandtwo }</td>
+                </c:if>
+
                 <c:if test="${pwd==1}">
                     <td class="colorFont">${mi.wu }</td>
                 </c:if>
                 <c:if test="${pwd==2}">
                     <td class="colorFont">${mi.ling }</td>
                 </c:if>
+                <c:if test="${pwd==4}">
+                    <td class="colorFont">${mi.ling }</td>
+                </c:if>
+
                 <td class="colorFont">${mi.ling }</td>
                 <td class="colorFont">${mi.ling }</td>
             </tr>

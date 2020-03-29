@@ -261,6 +261,22 @@ public class BillController {
             // 更新用户用水量
             updateWaterConsumptionByMonth(2, water_consumption, customer.getCid());
             break;
+        case 14:
+            //  3-4 月份连月开票走这里
+            billService.updatefour(condition);
+            bill = billService.selectBill(condition); // 查询修改之后的用户账单
+            // 创建过度对象 jsp所需的数据都放在过度对象中
+            mi.setMonth(4);
+            mi.setFirstNumber(bill.getTwo());
+            mi.setLastNumber(bill.getFour());
+            BigDecimal y14 = new BigDecimal((customer.getCprice() * (bill.getFour() - bill.getTwo())));
+            mi.setTotal(y14.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
+            mi.setFirstTotal(mi.getTotal() + 10.0);
+            monthBillService.updatemfour(mi);
+            water_consumption = bill.getFour() - bill.getTwo();
+            // 更新用户用水量
+            updateWaterConsumptionByMonth(4, water_consumption, customer.getCid());
+            break;
         }
         //设置默认地址
         if(org.apache.commons.lang3.StringUtils.isBlank(mi.getAddress())){
@@ -291,7 +307,7 @@ public class BillController {
         if (request.getParameter("password").equals("1")) {
             total2 = mi.getTotal() + 5;
         }
-        if (request.getParameter("password").equals("2")) {
+        if (request.getParameter("password").equals("2")|| request.getParameter("password").equals("4")) {
             total2 = mi.getTotal() + 10;
         }
         s = total1.toString().split("\\.");
@@ -361,6 +377,10 @@ public class BillController {
         if (request.getParameter("password").equals("2")) {
             mi.setTwoandtwo(1);
             mi.setLianyue("1-2");
+        }
+        if (request.getParameter("password").equals("4")) {
+            mi.setTwoandtwo(1);
+            mi.setLianyue("3-4");
         }
         mi.setLing("0");
         mv.addObject("mi", mi);
@@ -483,6 +503,9 @@ public class BillController {
         if (request.getParameter("password").equals("2")) {
             fileName = bianhao + "-" + mi.getUname() + "的" + mi.getYear() + "年1-2月份收据.xls";
         }
+        if (request.getParameter("password").equals("4")) {
+            fileName = bianhao + "-" + mi.getUname() + "的" + mi.getYear() + "年3-4月份收据.xls";
+        }
         file = new File(fullFilePath + System.getProperty("file.separator") + fileName);
         // 若文件不存在
         if (!file.exists()) {
@@ -513,6 +536,9 @@ public class BillController {
         }
         if (request.getParameter("password").equals("2")) {
             b = new Label(0, 1, year + "年1-2月", format2);
+        }
+        if (request.getParameter("password").equals("4")) {
+            b = new Label(0, 1, year + "年3-4月", format2);
         }
 
         sheet.addCell(b);
@@ -614,7 +640,8 @@ public class BillController {
             jxl.write.Number u1 = new jxl.write.Number(9, 6, 5, format9); // 元
             sheet.addCell(u1);
         }
-        if (request.getParameter("password").equals("2")) { // 如果连月开票 容量水费应该是十元
+        if (request.getParameter("password").equals("2") || request.getParameter("password").equals("4")) {
+            // 如果连月开票 容量水费应该是十元
             Label t15 = new Label(8, 6, "1", format9); // 拾
             sheet.addCell(t15);
             jxl.write.Number u1 = new jxl.write.Number(9, 6, 0, format9); // 元
