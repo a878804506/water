@@ -1,5 +1,6 @@
 package com.cyh.util;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.StringUtils;
 
@@ -62,12 +63,13 @@ public final class GetUserIpUtil {
     private static JSONObject getAddressByIp(String IP){
         try{
             String str = getJsonContent("http://ip.taobao.com/service/getIpInfo.php?ip="+IP);
-            if(StringUtils.isNotBlank(str))
-                return JSONObject.parseObject(str);
+            JSONObject result = (JSONObject) JSON.parse(str);
+            if(result.get("code").toString().equals("0"))
+                return result;
         }catch(Exception e){
-            return JSONObject.parseObject("{\"code\":1,\"ip\":\""+IP+"\"}");
+            return JSONObject.parseObject("{\"code\":5,\"ip\":\""+IP+"\"}");
         }
-        return JSONObject.parseObject("{\"code\":1,\"ip\":\""+IP+"\"}");
+        return JSONObject.parseObject("{\"code\":5,\"ip\":\""+IP+"\"}");
     }
 
     private static String getJsonContent(String urlStr) {
